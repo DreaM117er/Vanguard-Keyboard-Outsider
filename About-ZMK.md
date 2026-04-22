@@ -37,6 +37,7 @@
 
 這樣方便大家理解一下邏輯，你也會比較容易看得懂 `zmk` 官方文本的內容在寫什麼。
 
+<br>
 
 ## 教學開始
 
@@ -71,7 +72,7 @@ mkdir <custom_keyboard>
 touch Kconfig.shield <custom_keyboard>.overlay <custom_keyboard>.keymap
 ```
 
-先創建「行星（`dir`）」、「旗標（`Kconfig`）」、「運作核心（`.overlay`）」、「功能核心（`.keymap`）」檔。
+> 先創建「行星（`dir`）」、「旗標（`Kconfig`）」、「運作核心（`.overlay`）」、「功能核心（`.keymap`）」檔。
 
 2. 然後將 `Kconfig.shield` 打開，寫入代碼後存檔：
 
@@ -151,19 +152,42 @@ config SHIELD_CUSTOM_KEYBOARD
 
 #### 電路板原理圖及實際矩陣圖
 
+<table>
+  <tr>
+    <td width="50%">
+      <img src="pic/info/layout.png" width="100%" alt="layout">
+    </td>
+    <td width="50%">
+      <img src="pic/info/mcu-ki.png" width="100%" alt="mcu-ki">
+    </td>
+  </tr>
+   <tr>
+    <td width="50%">
+      <img src="pic/info/matrix-ki.png" width="100%" alt="matrix-ki">
+    </td>
+    <td width="50%">
+      <img src="pic/info/matrix-ki2.png" width="100%" alt="matrix-ki2">
+    </td>
+  </tr>
+</table>
 
+這裡先說明一個很常見的幾個誤區：
+1. 矩陣大小「不等於」實際矩陣圖。
+2. 理想矩陣配置「不等於」實際矩陣配置。
 
+拿範例的 `Outsider` 鍵盤來說，標準 `Plank` 配置的鍵盤矩陣大小是 `4x12`，我的設計多了一顆懸浮按鍵（音量旋鈕 `EC-11`），因此總按鍵數量是 `49` 顆。
+- 理想的矩陣佈線圖一定會是 `4x12`，這很合理對吧。
+- 實際上我設計了 `8x8` 的矩陣，合計 `64` 顆按鍵，比 `7x7` 矩陣還要好設計，也方便擴充跟佈線。
 
+這樣應該能理解爲什麼了吧？
 
+<br>
 
+#### 寫入運作核心及功能設置 
 
+原理圖及矩陣圖不管是 `qmk` 還是 `zmk` 韌體裡，在寫入配置的時候都相當重要，因爲你要實際去對照「你的設計」，去一個個寫入它應該要有的功能。
 
-
-
-
-
-
-2. 假設個人化配置的鍵盤使用的是 `NRF52840` 系列的晶片開發板（含 `nice nano v2`），那麼可以將下面這組模板放入鍵盤功能核心檔 `<custom_keyboard>.overlay` 內（一體式鍵盤），然後根據你的鍵盤原理圖，去修改實際對接開發板的腳位。
+1. 首先我們打開 `<custom_keyboard>.overlay`，`Outsider` 的範例在下方，你可以根據註解去修改你的鍵盤 `.overlay` 檔案。
 
 ``` markdown
 #include <dt-bindings/zmk/matrix_transform.h>
@@ -174,6 +198,7 @@ config SHIELD_CUSTOM_KEYBOARD
         zmk,matrix_transform = &default_transform;
     };
 
+    /* 開發板設定 */
     kscan0: kscan_0 {
         compatible = "zmk,kscan-gpio-matrix";
         label = "KSCAN";
@@ -204,14 +229,14 @@ config SHIELD_CUSTOM_KEYBOARD
             ;
     };
 
-    /* Keymap 設定 */
+    /* 矩陣大小設定 */
     default_transform: keymap_transform_0 {
         compatible = "zmk,matrix-transform";
-        /* 矩陣大小設定 */
+        /* 定義矩陣大小 */
         columns = <8>;
         rows = <8>;
         map = <
-            /* Keymap 按鍵配置會在這裡進行設定 */
+            /* 實際矩陣大小 */
             RC(0,0) RC(4,0) RC(0,1) RC(4,1) RC(0,2) RC(4,2) RC(0,3) RC(4,3) RC(0,4) RC(4,4) RC(0,5) RC(4,5)
             RC(1,0) RC(5,0) RC(1,1) RC(5,1) RC(1,2) RC(5,2) RC(1,3) RC(5,3) RC(1,4) RC(5,4) RC(1,5) RC(5,5)
             RC(2,0) RC(6,0) RC(2,1) RC(6,1) RC(2,2) RC(6,2) RC(2,3) RC(6,3) RC(2,4) RC(6,4) RC(2,5) RC(6,5)
@@ -222,4 +247,50 @@ config SHIELD_CUSTOM_KEYBOARD
 };
 ```
 
-3. Keymap 按鍵配置的部分，首先需要打開 Keyboard Layout Editor（簡稱 KLE），先進行一次實體按鍵的矩陣配置。
+> 這個部分是設置你的硬體運作核心，因此你要在 .overlay 檔案裡設置開發板上的每一個腳位是定義核心功能「旗標」、「定義矩陣大小」及「實際矩陣大小」。
+
+然後設定好「運作核心」之後，才會來設定「功能核心」——也就是你的實際矩陣上的各個按鍵上「有什麼功能」。
+
+2. 接著打開 `.keymap` 檔案，這裡也會是你最花時間的地方，因爲每一個人理想的按鍵功能都不一樣。
+
+``` markdown
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+
+/ {
+    keymap {
+        compatible = "zmk,keymap";
+
+        default_layer {
+            // Base Layer
+            bindings = <
+                &kp ESC   &kp Q  &kp W  &kp E  &kp R  &kp T    &kp Y  &kp U  &kp I     &kp O   &kp P    &kp BSPC
+                &kp TAB   &kp A  &kp S  &kp D  &kp F  &kp G    &kp H  &kp J  &kp K     &kp L   &kp SEMI &kp RET
+                &kp LSHFT &kp Z  &kp X  &kp C  &kp V  &kp B    &kp N  &kp M  &kp COMMA &kp DOT &kp FSLH &kp RSHFT
+                &kp LCTRL &kp LGUI &kp LALT &mo 1 &kp SPACE &kp SPACE &kp SPACE &kp SPACE &mo 2 &kp RALT &kp RGUI &kp RCTRL &kp C_MUTE
+            >;
+        };
+
+        // Layer 1 (Lower)
+        lower_layer {
+            bindings = <
+                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans &trans
+            >;
+        };
+
+        // Layer 2 (Raise)
+        raise_layer {
+            bindings = <
+                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans &trans
+            >;
+        };
+    };
+};
+```
