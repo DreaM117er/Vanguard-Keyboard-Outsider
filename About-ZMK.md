@@ -251,6 +251,8 @@ config SHIELD_CUSTOM_KEYBOARD
 
 然後設定好「運作核心」之後，才會來設定「功能核心」——也就是你的實際矩陣上的各個按鍵上「有什麼功能」。
 
+<br>
+
 2. 接著打開 `.keymap` 檔案，這裡也會是你最花時間的地方，因爲每一個人理想的按鍵功能都不一樣。
 
 ``` markdown
@@ -295,7 +297,10 @@ config SHIELD_CUSTOM_KEYBOARD
 };
 ```
 
+<br>
+
 至此，我們的本地 zmk 資料夾架構圖就會變成這樣：
+
 ![](pic/info/dir-tree.png)
 
 - `boards/shields`
