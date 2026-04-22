@@ -298,17 +298,17 @@ config SHIELD_CUSTOM_KEYBOARD
 至此，我們的本地 zmk 資料夾架構圖就會變成這樣：
 ![](pic/info/dir-tree.png)
 
-- boards/shields
+- `boards/shields`
     - 內部的子資料夾就是本地端的 zmk 星系中所有的鍵盤位置所在地。
-        - Kconfig.shield 爲行星的「旗標」，內部沒有設定就不存在該行星的存在。
-        - .overlay 檔案說明該行星運作規則，比方核心怎麼驅動、水流怎麼走等等。
-        - .keymap 檔案定義該行星上有什麼東西，比方按鍵壓下去之後會跑出什麼資料給電腦。
-- config
+        - `Kconfig.shield` 爲行星的「旗標」，內部沒有設定就不存在該行星的存在。
+        - `.overlay` 檔案說明該行星運作規則，比方核心怎麼驅動、水流怎麼走等等。
+        - `.keymap` 檔案定義該行星上有什麼東西，比方按鍵壓下去之後會跑出什麼資料給電腦。
+- `config`
     - 資料夾設定該星系的主要規則，比如全域變數設定、藍牙發射功率、深度休眠模式等。
-    - west.yml、zmk.conf
-- zephyr
-    - module.yml 負責給予 zephyr 編譯系統宣告「這個星系是一個獨立的模組」。
-- build.yaml
-    - 給 GitHub Actions（CI/CD）查閱的指令腳本，定義「誰作爲誰的主控，輸出成 .uf2 韌體檔案」。
+    - `west.yml`、`zmk.conf`
+- `zephyr`
+    - `module.yml` 負責給予 `zephyr` 編譯系統宣告「這個星系是一個獨立的模組」。
+- `build.yaml`
+    - 給 `GitHub Actions`（`CI/CD`）查閱的指令腳本，定義「誰作爲誰的主控，輸出成 `.uf2` 韌體檔案」。
 
-這樣一來，zmk 的資料夾就全面定義、解析完畢，接下來你在觀看 zmk 官方文本的時候，就會輕鬆許多。
+這樣一來，`zmk` 的資料夾就全面定義、解析完畢，接下來你在觀看 `zmk` 官方文本的時候，就會輕鬆許多。
