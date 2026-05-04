@@ -259,43 +259,93 @@ config SHIELD_CUSTOM_KEYBOARD
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/pointing.h>
 
 / {
     keymap {
         compatible = "zmk,keymap";
 
+        // Layer 0: Base
         default_layer {
-            // Base Layer
+            display-name = "Default Layer";
             bindings = <
-                &kp ESC   &kp Q  &kp W  &kp E  &kp R  &kp T    &kp Y  &kp U  &kp I     &kp O   &kp P    &kp BSPC
-                &kp TAB   &kp A  &kp S  &kp D  &kp F  &kp G    &kp H  &kp J  &kp K     &kp L   &kp SEMI &kp RET
-                &kp LSHFT &kp Z  &kp X  &kp C  &kp V  &kp B    &kp N  &kp M  &kp COMMA &kp DOT &kp FSLH &kp RSHFT
-                &kp LCTRL &kp LGUI &kp LALT &mo 1 &kp SPACE &kp SPACE &kp SPACE &kp SPACE &mo 2 &kp RALT &kp RGUI &kp RCTRL &kp C_MUTE
+                &kp ESC   &kp Q     &kp W     &kp E     &kp R     &kp T      &kp Y     &kp U     &kp I     &kp O     &kp P     &kp BSPC
+                &kp LSHFT &kp A     &kp S     &kp D     &kp F     &kp G      &kp H     &kp J     &kp K     &kp L     &kp SEMI  &kp SQT
+                &kp LCTRL &kp Z     &kp X     &kp C     &kp V     &kp B      &kp N     &kp M     &kp COMMA &kp DOT   &kp FSLH  &kp RET
+                &mkp RCLK &mkp LCLK &mkp MCLK &kp LALT  &mo 2     &kp SPACE  &kp RSHFT &mo 1     &kp RGUI  &kp LBKT  &kp RBKT  &to 2     &kp C_MUTE
             >;
         };
 
-        // Layer 1 (Lower)
+        // Layer 1: Lower
         lower_layer {
+            display-name = "Lower Layer";
             bindings = <
-                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans &trans
+                &kp TILDE   &none   &kp EXCL  &kp AT    &kp HASH  &kp EQUAL  &kp F1    &kp F2    &kp F3    &kp F12   &none     &kp DEL
+                &kp LA(TAB) &none   &kp DLLR  &kp PRCNT &kp CARET &kp UNDER  &kp F4    &kp F5    &kp F6    &kp F11   &none     &trans
+                &trans      &none   &kp AMPS  &kp STAR  &kp LPAR  &kp RPAR   &kp F7    &kp F8    &kp F9    &kp F10   &kp BSLH  &trans
+                &trans      &trans  &trans    &kp LALT  &kp LGUI  &kp SPACE  &kp RSHFT &trans    &trans    &trans    &trans    &to 3     &trans
             >;
         };
 
-        // Layer 2 (Raise)
+        // Layer 2: Raise
         raise_layer {
+            display-name = "Raise Layer";
             bindings = <
-                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans &trans &trans
+                &kp GRAVE &kp KP_SLASH &kp N1 &kp N2    &kp N3    &kp PLUS   &kp PG_UP &kp HOME  &kp UP    &kp END   &kp C_VOL_UP &kp BSPC
+                &kp TAB   &kp KP_STAR  &kp N4 &kp N5    &kp N6    &kp MINUS  &kp PG_DN &kp LEFT  &kp DOWN  &kp RIGHT &kp C_VOL_DN &kp RET
+                &kp LCTRL &kp DOT      &kp N7 &kp N8    &kp N9    &kp N0     &kp LBKT  &kp RBKT  &trans    &trans    &kp BSLH     &trans
+                &trans    &trans       &trans &sk LALT  &kp LGUI  &kp RET    &kp RSHFT &trans    &trans    &trans    &trans       &to 0     &trans
+            >;
+        };
+
+        // Layer 3: System/Control
+        sys_layer {
+            display-name = "System Layer";
+            bindings = <
+                &none     &none   &none   &kp INS &kp SLCK &kp PAUSE_BREAK &none   &none   &none   &none   &kp PSCRN &none
+                &kp CAPS  &none   &none   &none   &none    &none           &none   &none   &none   &none   &none     &none
+                &none     &none   &none   &none   &none    &none           &none   &none   &none   &none   &none     &none
+                &none     &none   &none   &none   &none    &none           &none   &none   &none   &none   &none     &to 0     &none
             >;
         };
     };
 };
 ```
+
+<br>
+
+以上 Keymap 是 最終我針對 Outsider 這把鍵盤的配列去調配出來的配列代碼，下面會放上在 QMK 裡面的 keymap 對照圖，基本上現在的有線鍵盤韌體（QMK）跟無線鍵盤韌體（ZMK）的部分，你在設計 Keymap 上應該不會差異太大。
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="pic/info/keymap0.png" width="100%" alt="keymap0">
+    </td>
+    <td width="50%">
+      <img src="pic/info/keymap1.png" width="100%" alt="keymap1">
+    </td>
+  </tr>
+   <tr>
+    <td width="50%">
+      <img src="pic/info/keymap2.png" width="100%" alt="keymap2">
+    </td>
+    <td width="50%">
+      <img src="pic/info/keymap3.png" width="100%" alt="keymap3">
+    </td>
+  </tr>
+</table>
+
+<br>
+
+至於整把鍵盤要做成什麼樣子的配列及調配花樣，這裡也是非常花時間的地方，假設你沒有多變化鍵位的需求，這部分就跳過。
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="pic/info/layout2.png" width="100%" alt="layout2">
+    </td>
+  </tr>
+</table>
 
 <br>
 
