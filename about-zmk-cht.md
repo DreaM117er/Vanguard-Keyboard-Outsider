@@ -39,11 +39,78 @@
 
 <br>
 
+## 前置作業
+
+如果是純新手要入坑 zmk ，你會忽略掉非常多軟體工程的細節部分，這點也是我在撰寫文本的時候發現的，這裡一步步來將它們統整出來：
+
+1. 終端機執行更新（不同發行版有各自的差異）：
+
+``` markdown
+sudo apt update
+```
+
+2. 安裝 `Python3` 與 `pip3`：
+
+``` markdown
+sudo apt install python3 python3-pip
+```
+
+3. 安裝 `west`：
+
+``` markdown
+pip3 install west
+```
+
+### 錯誤處理
+
+如果執行 `pip3 install west` 失敗，按照下列方式執行：
+
+1. 安裝虛擬環境建制工具：
+
+``` markdown
+sudo apt install python3-venv
+```
+
+2. 在 `cd` 資料目錄下，建立 `zmk-env` 的隔離環境。
+
+``` markdown
+python3 -m venv ~/zmk-env
+```
+
+3. 啓動隔離環境，你會發現終端機前面多了一行 `(zmk-env)`。
+
+``` markdown
+source ~/zmk-env/bin/activate
+```
+
+4. 再執行一次 `pip3 install west` 指令。
+
+> 注意事項：每次打開終端機，準備要編譯 `zmk` 前，都必須先執行 `source ~/zmk-env/bin/activate` 來啟動環境，然後才能用 `west build`。
+
+<br>
+
 ## 教學開始
 
-### A. 創建本地端 zmk 星系
+### A. 創建本地端 zmk 宇宙及星系
 
-1. 首先你需要準備好你的 GitHub 帳號，將官方的個人化設定檔 `fork` 到你的專案目錄底下（比如：`XXX-zmk-config`）
+#### 何謂 zmk 宇宙？
+
+不同於 `qmk` 可以隨機 `fork` 到自己的專案目錄下修改， `zmk` 比較傾向它的原專案提供「純燒錄」的功能。也就是說，你把 `zmk` 原始專案 `fork` 到你的 `GitHub` 帳號端沒有意義。
+
+1. 首先進入 `zmk` 官方 `GitHub` 頁面——https://github.com/zmkfirmware/zmk。
+2. 然後點選 `code` 按鈕，把它 `clone` 到你的電腦本地端，或者在終端機執行：
+
+``` markdown
+git clone https://github.com/zmkfirmware/zmk.git
+```
+
+這樣一來，`zmk` 宇宙核心運作機制已經準備完畢，在後續燒錄韌體的時候，你就會用到它。
+
+<br>
+
+#### 何謂 zmk 星系？
+
+1. 首先你需要準備好你的 `GitHub` 帳號，將官方的個人化設定檔 `fork` 到你的專案目錄底下（比如：`XXX-zmk-config`）
 ——https://github.com/zmkfirmware/unified-zmk-config-template
 2. 然後操作終端機，定位到你預設的本地 GitHub 倉庫目錄，執行 `zmk` 的安裝流程：https://zmk.dev/docs/user-setup
 3. 執行安裝流程到 `zmk init` 的時候，將 `Repository URL` 輸入你方才建立的 `XXX-zmk-config` 的 GitHub 個人化設定檔 `repo` 網址，系統會幫你設定好 `config` 目錄
@@ -360,7 +427,8 @@ config SHIELD_CUSTOM_KEYBOARD
         - `.keymap` 檔案定義該行星上有什麼東西，比方按鍵壓下去之後會跑出什麼資料給電腦。
 - `config`
     - 資料夾設定該星系的主要規則，比如全域變數設定、藍牙發射功率、深度休眠模式等。
-    - `west.yml`、`zmk.conf`
+    - `west.yml` 檔案用於選擇你要使用什麼版本的 `zmk` 韌體進行燒錄。
+    - `zmk.conf`
 - `zephyr`
     - `module.yml` 負責給予 `zephyr` 編譯系統宣告「這個星系是一個獨立的模組」。
 - `build.yaml`
@@ -374,13 +442,63 @@ config SHIELD_CUSTOM_KEYBOARD
 
 #### 旋鈕設置
 
-前面我們講述了如何針對一般按鈕的矩陣部分如何設定，因爲 Outsider 在預設的硬體設置方面是支援旋鈕（Encoder）的，這裡我會接着告訴大家要如何設置旋鈕的「旋轉（Rotation）」跟「脈衝（Pulse）」。
+前面我們講述了如何針對一般按鈕的矩陣部分如何設定，因爲 `Outsider` 在預設的硬體設置方面是支援旋鈕（`Encoder`）的，這裡我會接着告訴大家要如何設置旋鈕的「旋轉（`Rotation`）」跟「脈衝（`Pulse`）」。
 
-還有一部分是針對「指標設備（Pointing Device）」的設置，因爲 Outsider 的硬體端也支援，我會先後說明。
-
-
+還有一部分是針對「指標設備（`Pointing Device`）」的設置，因爲 `Outsider` 的硬體端也支援，我會先後說明。
 
 
 
+
+<br>
 
 #### 指標設備
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br>
+
+### D. 韌體燒錄
+
+#### west.yml 設定
+
+我想不到要用什麼作爲子標題，直白一點比較好：前述有稍微提到——「`west.yml` 檔案用於選擇你要使用什麼版本的 `zmk` 韌體進行燒錄」，那麼我們在前面的 `config` 設定完畢之後，就必須來檢查這個部分有沒有設定完善。
+
+1. 回到 `zmk cd`，進入到 `config `資料夾，打開 `west.yml` 檔案，它會呈現這樣的架構：
+
+``` c
+manifest:
+  defaults:
+    revision: v0.3 // v0.3 改成 main
+  remotes:
+    - name: zmkfirmware
+      url-base: https://github.com/zmkfirmware
+    # Additional modules containing boards/shields/custom code can be listed here as well
+    # See https://docs.zephyrproject.org/3.2.0/develop/west/manifest.html#projects
+  projects:
+    - name: zmk
+      remote: zmkfirmware
+      import: app/west.yml
+  self:
+    path: config
+```
+
+你會發現 `reversion` 預設會被掛載 `v0.3` ，這裡我們要將這個部分修改成 `main` ，然後存檔後關閉。
+
+2. 然後打開終端機，在 `zmk cd` 資料夾下，執行 `west update` 指令，來向 `zmk` 宇宙宣告我要使用 `main` 直接燒錄韌體。
+
+``` markdown
+zmk cd
+west update
+```
+
+<br>
