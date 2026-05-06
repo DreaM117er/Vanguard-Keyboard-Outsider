@@ -144,7 +144,7 @@ config SHIELD_CUSTOM_KEYBOARD
 `NRF52840 ProMicro` 及 `nice nano v2` 的腳位及功能都是採用相同的設計方式（使用元件不同）：
 - 輸出電壓 `3V3`，`GND` 位置跟 `RP2040 ProMicro` 一樣。
 
-> 非常重要：全功能腳位都能輸出 `I2C` 通訊。
+> 非常重要：全功能腳位都能輸出 `I2C` 通訊。雖然全功能皆可，但建議優先使用開發板預設標示的 `SDA/SCL` 腳位，以減少軟體定義的麻煩。
 
 > 非常重要：`RAW` 爲電池「正極」的接口。
 
@@ -189,7 +189,7 @@ config SHIELD_CUSTOM_KEYBOARD
 
 1. 首先我們打開 `<custom_keyboard>.overlay`，`Outsider` 的範例在下方，你可以根據註解去修改你的鍵盤 `.overlay` 檔案。
 
-``` markdown
+``` c
 #include <dt-bindings/zmk/matrix_transform.h>
 
 / {
@@ -255,11 +255,11 @@ config SHIELD_CUSTOM_KEYBOARD
 
 2. 接著打開 `.keymap` 檔案，這裡也會是你最花時間的地方，因爲每一個人理想的按鍵功能都不一樣。
 
-``` markdown
+``` c
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
-#include <dt-bindings/zmk/pointing.h>
+#include <dt-bindings/zmk/pointing.h> // 這個部分是針對 HID Device 的功能及按鍵操作的資料庫
 
 / {
     keymap {
@@ -314,7 +314,7 @@ config SHIELD_CUSTOM_KEYBOARD
 
 <br>
 
-以上 Keymap 是 最終我針對 Outsider 這把鍵盤的配列去調配出來的配列代碼，下面會放上在 QMK 裡面的 keymap 對照圖，基本上現在的有線鍵盤韌體（QMK）跟無線鍵盤韌體（ZMK）的部分，你在設計 Keymap 上應該不會差異太大。
+以上 `Keymap` 是 最終我針對 `Outsider` 這把鍵盤的配列去調配出來的配列代碼，下面會放上在 `QMK` 裡面的 `keymap` 對照圖，基本上現在的有線鍵盤韌體（`QMK`）跟無線鍵盤韌體（`ZMK`）的部分，你在設計 `Keymap` 上應該不會差異太大。
 
 <table>
   <tr>
@@ -367,3 +367,20 @@ config SHIELD_CUSTOM_KEYBOARD
     - 給 `GitHub Actions`（`CI/CD`）查閱的指令腳本，定義「誰作爲誰的主控，輸出成 `.uf2` 韌體檔案」。
 
 這樣一來，`zmk` 的資料夾就全面定義、解析完畢，接下來你在觀看 `zmk` 官方文本的時候，就會輕鬆許多。
+
+> 補充說明：針對 `#include <dt-bindings/zmk/pointing.h>` 資料庫，它屬於最新版本的設定，舊版本的 `mouse.h` 已經被整合進來，如果是最新版的話，務必使用 `pointing.h` 做宣告。
+
+<br>
+
+#### 旋鈕設置
+
+前面我們講述了如何針對一般按鈕的矩陣部分如何設定，因爲 Outsider 在預設的硬體設置方面是支援旋鈕（Encoder）的，這裡我會接着告訴大家要如何設置旋鈕的「旋轉（Rotation）」跟「脈衝（Pulse）」。
+
+還有一部分是針對「指標設備（Pointing Device）」的設置，因爲 Outsider 的硬體端也支援，我會先後說明。
+
+
+
+
+
+
+#### 指標設備
