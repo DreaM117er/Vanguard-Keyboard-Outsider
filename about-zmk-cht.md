@@ -125,7 +125,7 @@ git clone https://github.com/zmkfirmware/zmk.git
 
 ### B. 行星誕生
 
-前述我們將 `zmk` 的星系開拓完畢後，這個星系現在非常地乾淨，什麼都沒有，我們需要在這個星系裡誕生新的「行星」，這也對應著上述 `A-4` 、 `A-5` 點的操作方法：
+前述我們將 `zmk` 的星系開拓完畢後，這個星系現在非常地乾淨，什麼都沒有，我們需要在這個星系裡誕生新的「行星」，這也對應著上述「何謂 zmk 星系？」 第`4-5` 點的操作方法：
 - 現成的 `zmk` 宇宙設定，雲端導入到你的電腦（星系）進行配置修改。
 - 從 `0` 開始創建一個「新的鍵盤」（在星系裡創建行星）。
 
@@ -487,10 +487,10 @@ config SHIELD_CUSTOM_KEYBOARD
 
 1. 回到 `zmk cd`，進入到 `config `資料夾，打開 `west.yml` 檔案，它會呈現這樣的架構：
 
-``` c
+``` yaml
 manifest:
   defaults:
-    revision: v0.3 // v0.3 改成 main
+    revision: v0.3 # v0.3 改成 main
   remotes:
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
