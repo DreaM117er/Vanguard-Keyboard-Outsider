@@ -769,7 +769,7 @@ cd boards/shields/<custom_keyboard>
 ``` conf
 # 藍牙設定
 CONFIG_ZMK_BLE=y
-CONFIG_ZMK_KEYBOARD_NAME="Outsider" # 藍牙廣播名稱
+CONFIG_ZMK_KEYBOARD_NAME="<custom_keyboard_BLE>" # 藍牙廣播名稱
 CONFIG_BT_CTLR_TX_PWR_PLUS_8=y # 提升藍牙傳輸功率
 CONFIG_CLOCK_CONTROL_NRF_K32SRC_RC=y # 使用內部 RC 振盪器
 CONFIG_CLOCK_CONTROL_NRF_K32SRC_500PPM=y # RC 振盪器精度設定
@@ -782,6 +782,8 @@ CONFIG_ZMK_USB=y
 ```
 
 如果這部分沒有設定好，`MCU` 會裝死給你看，你用其他藍牙設備也搜尋不到訊號，但連接設備的藍色燈光會一直閃爍。
+
+> 特別注意：市面上許多的 `nice!nano v2` 克隆版跟原廠在藍牙晶片發射功率上可能有差異，這點務必先參閱「開發板原理圖」後，再根據 `zmk` 的設定來調整。這裡我就有開啓 `RC` 振盪器的校正功能，才讓我順利地用藍牙設備接受到自己的鍵盤。
 
 3. 然後打開 `.keymap` 檔案，將控制藍牙的按鍵功能設定進 `keymap` 裡面：
 
