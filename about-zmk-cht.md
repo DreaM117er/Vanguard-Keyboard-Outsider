@@ -93,28 +93,13 @@ source ~/zmk-env/bin/activate
 
 <br>
 
-### 創建本地端 zmk 宇宙及星系
-
-#### 何謂 zmk 宇宙？
-
-不同於 `qmk` 可以隨機 `fork` 到自己的專案目錄下修改， `zmk` 比較傾向它的原專案提供「純燒錄」的功能。也就是說，你把 `zmk` 原始專案 `fork` 到你的 `GitHub` 帳號端沒有意義。
-
-1. 首先進入 `zmk` 官方 `GitHub` 頁面——https://github.com/zmkfirmware/zmk。
-2. 然後點選 `code` 按鈕，把它 `clone` 到你的電腦本地端，或者在終端機執行：
-
-``` markdown
-git clone https://github.com/zmkfirmware/zmk.git
-```
-
-這樣一來，`zmk` 宇宙核心運作機制已經準備完畢，在後續燒錄韌體的時候，你就會用到它。
-
-<br>
+### 創建本地端 zmk 星系
 
 #### 何謂 zmk 星系？
 
 1. 首先你需要準備好你的 `GitHub` 帳號，將官方的個人化設定檔 `fork` 到你的專案目錄底下（比如：`XXX-zmk-config`）
 ——https://github.com/zmkfirmware/unified-zmk-config-template
-2. 然後操作終端機，定位到你預設的本地 GitHub 倉庫目錄，執行 `zmk` 的安裝流程：https://zmk.dev/docs/user-setup
+2. 然後操作終端機，定位到你預設的本地 `GitHub` 倉庫目錄，執行 `zmk` 的安裝流程：https://zmk.dev/docs/user-setup
 3. 執行安裝流程到 `zmk init` 的時候，將 `Repository URL` 輸入你方才建立的 `XXX-zmk-config` 的 GitHub 個人化設定檔 `repo` 網址，系統會幫你設定好 `config` 目錄
 4. 接著你可以選擇輸入 `Y` 取用現成的 `zmk firmware` 設定檔爲自己網購買來的鍵盤變更 `keymap` 按鍵配置。
 5. 選用 `N` 的話，終端機執行 `zmk cd`，定位在預設的 `config` 資料夾目錄。
@@ -130,7 +115,7 @@ git clone https://github.com/zmkfirmware/zmk.git
 - `config`
     - 資料夾設定該星系的主要規則，比如全域變數設定、藍牙發射功率、深度休眠模式等。
     - `west.yml` 檔案用於選擇你要使用什麼版本的 `zmk` 韌體進行燒錄。
-    - `zmk.conf`
+    - `zmk.conf`、`xxx.conf` 檔案用於設備的藍牙設定，後續會提到。
 - `zephyr`
     - `module.yml` 負責給予 `zephyr` 編譯系統宣告「這個星系是一個獨立的模組」。
 - `build.yaml`
@@ -176,7 +161,60 @@ west update
 
 <br>
 
-#### 燒錄前置設定
+#### .gitignore 忽略清單
+
+執行 `west update` 後，`west` 管理會將 `zmk` 的相依性套件直接從 `git` 倉庫全數掛載到 `XXX-zmk-config` 資料夾中，但不會幫你設定哪些檔案及資料夾是要進行過濾的，如果你硬是執行 `git push`，你會發現相依性套件都會在 `update list` 裡面，而且還會跳出警告，因爲相依性套件不是幾 `MB` 大小的檔案，而是好幾 `GB`。
+
+1. 首先定位在 `zmk cd` 主資料夾，然後新增 `.gitignore`。
+
+``` markdown
+zmk cd
+touch .gitignore
+```
+
+2. 接著將 `.gitignore` 打開，把下面的資料清單複製進去，存檔後關閉。
+
+``` .gitignore
+# 基礎 west 及 zmk 忽略
+.zmk/
+.west/
+
+# 忽視 west 下載的所有相依套件
+/zephyr/
+/zmk/
+/modules/
+/optional/
+
+# 忽視本地編譯產生的垃圾與韌體檔
+/build/
+
+# 忽視 Python 虛擬環境
+/zmk-env/
+.venv/
+```
+
+3. 執行 `.gitignore` 忽略清單的上傳。
+
+```
+git add .gitignore
+git commit -m "add .gitignore in config setting"
+git push
+```
+
+清單設定完畢之後，執行 `git push` 就不會再報錯了，除非你 `compile` 一個新的韌體出來，它才會有新的檔案列在 `git` 的上傳清單內。
+
+<br>
+
+#### 導入 zephyr 引擎
+
+
+
+
+
+
+
+
+
 
 
 
@@ -407,6 +445,10 @@ config SHIELD_CUSTOM_KEYBOARD
 
 然後設定好「運作核心」之後，才會來設定「功能核心」——也就是你的實際矩陣中的各個按鍵上「有什麼功能」。
 
+> 補充說明：`zmk` 針對 `ProMicro` 腳位的開發板有一套專屬的腳位定義表，這裡請參照官方說明文本的頁面——https://zmk.dev/docs/troubleshooting/hardware-issues
+
+[ProMicro pinout](https://zmk.dev/assets/images/pinout-4ed4b6eb1e452a7be44c3a0143cd5605.png)
+
 <br>
 
 2. 接著打開 `.keymap` 檔案，這裡也會是你最花時間的地方，因爲每一個人理想的按鍵功能都不一樣。
@@ -517,7 +559,7 @@ config SHIELD_CUSTOM_KEYBOARD
 - `config`
     - 資料夾設定該星系的主要規則，比如全域變數設定、藍牙發射功率、深度休眠模式等。
     - `west.yml` 檔案用於選擇你要使用什麼版本的 `zmk` 韌體進行燒錄。
-    - `zmk.conf`
+    - `zmk.conf`、`xxx.conf` 檔案用於設備的藍牙設定，後續會提到。
 - `zephyr`
     - `module.yml` 負責給予 `zephyr` 編譯系統宣告「這個星系是一個獨立的模組」。
 - `build.yaml`
@@ -535,18 +577,74 @@ config SHIELD_CUSTOM_KEYBOARD
 
 還有一部分是針對「指標設備（`Pointing Device`）」的設置，因爲 `Outsider` 的硬體端也支援，我會按照順序說明。
 
+1. 首先我們將 `.keymap` 檔案打開，看到 `default_layer` 的區塊，加入旋鈕的「旋值」。
 
+``` c
+... 上略。
 
+/ {
+    keymap {
+        compatible = "zmk,keymap";
 
+        // Layer 0: Base
+        default_layer {
+            display-name = "Default Layer";
+            bindings = <
+                &kp ESC   &kp Q     &kp W     &kp E     &kp R     &kp T      &kp Y     &kp U     &kp I     &kp O     &kp P     &kp BSPC
+                &kp LSHFT &kp A     &kp S     &kp D     &kp F     &kp G      &kp H     &kp J     &kp K     &kp L     &kp SEMI  &kp SQT
+                &kp LCTRL &kp Z     &kp X     &kp C     &kp V     &kp B      &kp N     &kp M     &kp COMMA &kp DOT   &kp FSLH  &kp RET
+                &mkp RCLK &mkp LCLK &mkp MCLK &kp LALT  &mo 2     &kp SPACE  &kp RSHFT &mo 1     &kp RGUI  &kp LBKT  &kp RBKT  &to 2     &kp C_MUTE
+            >;
+            // 旋鈕值 A、B 設定
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
+        };
 
+        // Layer 1: Lower
 
+... 下略。
+```
 
+以上是單一旋鈕值的設置，如果你在各個 `Layer` 層操作旋鈕都想要一樣的輸出值，那麼只要在 `default_layer` 做 `sensor-bindings` 的宣告即可。
 
+如果是「每層 `Layer` 都不同的旋值」，那麼你要在每個 `Layer` 層底部都插入相應的 `sensor-bindings` 宣告。
 
+``` c
+... 上略。
 
+/ {
+    keymap {
+        compatible = "zmk,keymap";
 
+        // Layer 0: Base
+        default_layer {
+            ...
+            // 音量控制
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
+        };
 
+        // Layer 1: Lower
+        lower_layer {
+            ...
+            // 滑鼠滾輪
+            sensor-bindings = <&inc_dec_kp mwh SCROLL_UP mwh SCROLL_DOWN>;
+        };
 
+        // Layer 2: Raise
+        raise_layer {
+            ...
+            // 切換上一首/下一首歌
+            sensor-bindings = <&inc_dec_kp C_NEXT C_PREV>;
+        };
+
+        // Layer 3: System/Control
+        sys_layer {
+            ...
+            // 音量控制
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
+        };
+
+... 下略。
+```
 
 <br>
 
@@ -565,6 +663,22 @@ config SHIELD_CUSTOM_KEYBOARD
 
 
 <br>
+
+### 設備連接設定
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
