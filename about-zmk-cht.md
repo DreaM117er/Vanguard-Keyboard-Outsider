@@ -720,7 +720,7 @@ left_encoder: encoder_left {
 
     sensors {
         ...
-        triggers-per-rotation = <12>; /* 轉一圈要觸發 24 次動作 */
+        triggers-per-rotation = <12>; /* 轉一圈要觸發 12 次動作 */
     };
 ```
 
