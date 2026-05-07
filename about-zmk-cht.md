@@ -41,6 +41,8 @@
 
 ## 前置作業
 
+### 安裝相依套件
+
 如果是純新手要入坑 `zmk` ，你會忽略掉非常多軟體工程的細節部分，這點也是我在撰寫文本的時候發現的，這裡一步步來將它們統整出來：
 
 1. 終端機執行更新（不同發行版有各自的差異）：
@@ -63,7 +65,7 @@ pip3 install west
 
 <br>
 
-### 錯誤處理
+### 相依性套件錯誤處理
 
 如果執行 `pip3 install west` 失敗，請按照下列方式執行：
 
@@ -91,9 +93,7 @@ source ~/zmk-env/bin/activate
 
 <br>
 
-## 教學開始
-
-### A. 創建本地端 zmk 宇宙及星系
+### 創建本地端 zmk 宇宙及星系
 
 #### 何謂 zmk 宇宙？
 
@@ -123,17 +123,104 @@ git clone https://github.com/zmkfirmware/zmk.git
 
 <br>
 
-### B. 行星誕生
+目前我們的 `XXX-zmk-config` 架構圖長這樣：
 
-前述我們將 `zmk` 的星系開拓完畢後，這個星系現在非常地乾淨，什麼都沒有，我們需要在這個星系裡誕生新的「行星」，這也對應著上述「何謂 zmk 星系？」 第`4-5` 點的操作方法：
-- 現成的 `zmk` 宇宙設定，雲端導入到你的電腦（星系）進行配置修改。
-- 從 `0` 開始創建一個「新的鍵盤」（在星系裡創建行星）。
-
-這裡我不討論導入雲端設定的部分，著重點在於「新的鍵盤」；留意當前的環境是不是：`zmk cd` 或是 `config` 目錄。
+- `boards/shields`
+    - 內部的子資料夾就是本地端的 `zmk` 星系中所有的鍵盤位置所在地，後續會說明。
+- `config`
+    - 資料夾設定該星系的主要規則，比如全域變數設定、藍牙發射功率、深度休眠模式等。
+    - `west.yml` 檔案用於選擇你要使用什麼版本的 `zmk` 韌體進行燒錄。
+    - `zmk.conf`
+- `zephyr`
+    - `module.yml` 負責給予 `zephyr` 編譯系統宣告「這個星系是一個獨立的模組」。
+- `build.yaml`
+    - 給 `GitHub Actions`（`CI/CD`）查閱的指令腳本，定義「誰作爲誰的主控，輸出成 `.uf2` 韌體檔案」。
 
 <br>
 
-1. 接著在目錄底下執行：
+### 燒錄工具設置
+
+#### west.yml 設定
+
+我想不到要用什麼作爲子標題，直白一點比較好：前述有提到「`west.yml` 檔案用於選擇你要使用什麼版本的 `zmk` 韌體進行燒錄」，我想來想去還是覺得這個部分必須在「新增新鍵盤」之前就必須完成，不然韌體檔案都設置完畢之後，你會看著自己的終端機乾等好久才能燒錄 `uf2` 韌體。
+
+1. 執行 `zmk cd`，進入到 `config `資料夾，打開 `west.yml` 檔案，它會呈現這樣的架構：
+
+``` yaml
+manifest:
+  defaults:
+    revision: v0.3 # v0.3 改成 main
+  remotes:
+    - name: zmkfirmware
+      url-base: https://github.com/zmkfirmware
+    # Additional modules containing boards/shields/custom code can be listed here as well
+    # See https://docs.zephyrproject.org/3.2.0/develop/west/manifest.html#projects
+  projects:
+    - name: zmk
+      remote: zmkfirmware
+      import: app/west.yml
+  self:
+    path: config
+```
+
+你會發現 `reversion` 預設會被掛載 `v0.3` ，這裡我們要將這個部分修改成 `main` ，然後存檔後關閉。
+
+2. 然後打開終端機，在 `zmk cd` 資料夾下，執行 `west update` 指令，來向 `zmk` 宇宙宣告我要使用 `main` 直接燒錄韌體。
+
+``` markdown
+zmk cd
+west update
+```
+
+第一次執行 `west update` 指令，就慢慢等 `git` 跑完它。
+
+<br>
+
+#### 燒錄前置設定
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 教學開始
+
+### A. 行星誕生
+
+前述我們將 `zmk` 的星系開拓完且所有的前置誰設定都設置完畢後，這個 `zmk` 星系現在非常地乾淨，什麼都沒有，我們需要在這個星系裡誕生新的「行星」，這也對應著上述「何謂 zmk 星系？」 第`4-5` 點的操作方法：
+- 現成的 `zmk` 宇宙設定，雲端導入到你的電腦（星系）進行配置修改。
+- 從 `0` 開始創建一個「新的鍵盤」（在星系裡創建行星）。
+
+這裡我不討論導入雲端設定的部分，著重點在於「新的鍵盤」。
+
+<br>
+
+1. 執行 `zmk cd` 接著在目錄底下執行：
 
 ``` markdown
 cd boards/shields
@@ -156,7 +243,7 @@ config SHIELD_CUSTOM_KEYBOARD
 
 <br>
 
-### C. 運作核心及功能設置
+### B. 運作核心及功能設置
 
 設定好鍵盤的「旗標」，接著才會依序創建「運作核心」及「功能核心」，也就是要先定義好你的鍵盤是使用什麼方式驅動 `zmk` 韌體，後續才會將鍵盤的功能一步步建立起來。
 
@@ -479,40 +566,5 @@ config SHIELD_CUSTOM_KEYBOARD
 
 <br>
 
-### D. 韌體燒錄
 
-#### west.yml 設定
 
-我想不到要用什麼作爲子標題，直白一點比較好：前述有稍微提到——「`west.yml` 檔案用於選擇你要使用什麼版本的 `zmk` 韌體進行燒錄」，那麼我們在前面的 `config` 設定完畢之後，就必須來檢查這個部分有沒有設定完善。
-
-1. 回到 `zmk cd`，進入到 `config `資料夾，打開 `west.yml` 檔案，它會呈現這樣的架構：
-
-``` yaml
-manifest:
-  defaults:
-    revision: v0.3 # v0.3 改成 main
-  remotes:
-    - name: zmkfirmware
-      url-base: https://github.com/zmkfirmware
-    # Additional modules containing boards/shields/custom code can be listed here as well
-    # See https://docs.zephyrproject.org/3.2.0/develop/west/manifest.html#projects
-  projects:
-    - name: zmk
-      remote: zmkfirmware
-      import: app/west.yml
-  self:
-    path: config
-```
-
-你會發現 `reversion` 預設會被掛載 `v0.3` ，這裡我們要將這個部分修改成 `main` ，然後存檔後關閉。
-
-2. 然後打開終端機，在 `zmk cd` 資料夾下，執行 `west update` 指令，來向 `zmk` 宇宙宣告我要使用 `main` 直接燒錄韌體。
-
-``` markdown
-zmk cd
-west update
-```
-
-第一次執行 `west update` 指令，就慢慢等 `git` 跑完它。
-
-<br>
