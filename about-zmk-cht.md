@@ -285,10 +285,10 @@ west build -s zmk/app -p -b nice_nano -- -DSHIELD=custom_keyboard -DZMK_CONFIG="
 ``` bash
 cd boards/shields
 mkdir <custom_keyboard>
-touch Kconfig.shield <custom_keyboard>.overlay <custom_keyboard>.keymap
+touch Kconfig.shield <custom_keyboard>.overlay <custom_keyboard>.keymap <custom_keyboard>.conf
 ```
 
-> 先創建「行星（`dir`）」、「旗標（`Kconfig`）」、「運作核心（`.overlay`）」、「功能核心（`.keymap`）」檔。
+> 先創建「行星（`dir`）」、「旗標（`Kconfig`）」、「運作核心（`.overlay`）」、「功能核心（`.keymap`）」、「藍牙設定（`.conf`）」檔。
 
 2. 然後將 `Kconfig.shield` 打開，寫入代碼後存檔：
 
@@ -522,10 +522,10 @@ config SHIELD_CUSTOM_KEYBOARD
         sys_layer {
             display-name = "System Layer";
             bindings = <
-                &none     &none   &none   &kp INS &kp SLCK &kp PAUSE_BREAK &none   &none   &none   &none   &kp PSCRN &none
-                &kp CAPS  &none   &none   &none   &none    &none           &none   &none   &none   &none   &none     &none
-                &none     &none   &none   &none   &none    &none           &none   &none   &none   &none   &none     &none
-                &none     &none   &none   &none   &none    &none           &none   &none   &none   &none   &none     &to 0     &none
+                &none        &none        &none        &kp INS  &kp SLCK &kp PAUSE_BREAK &none   &none   &none &none &kp PSCRN &none
+                &kp CAPS     &none        &none        &none    &none    &none           &none   &none   &none   &none   &none     &none
+                &none        &none        &none        &none    &none    &none           &none   &none   &none   &none   &none     &none
+                &none        &none        &none        &none    &none    &none           &none   &none   &none   &none   &none     &to 0     &none
             >;
         };
     };
@@ -757,30 +757,51 @@ left_encoder: encoder_left {
 
 沒錯，有線及無線都要設置，`zmk` 韌體經過我跟朋友討論過後發現，它少了一個設定，鍵盤就會罷工。
 
-1. 首先回到 `XXX-zmk-config` 資料夾，執行：
+1. 首先回到 `XXX-zmk-config` 資料夾，進入 `boards/shields/<custom_keyboard>` 資料夾目錄：
 
 ``` bash
 zmk cd
-cd config; touch <custom_keyboard>.conf
+cd boards/shields/<custom_keyboard>
 ```
 
-2. 然後將新增的 `.conf` 檔案打開，將連接設定寫入後存檔：
+2. 然後將 `.conf` 檔案打開，將連接設定寫入後存檔：
 
 ``` conf
-# 藍牙功率
-# 強制將藍牙發射功率提升到最大 (8dBm)
-CONFIG_BT_CTLR_TX_PWR_PLUS_8=y
+# 藍牙設定
+CONFIG_ZMK_BLE=y
+CONFIG_ZMK_KEYBOARD_NAME="Outsider" # 藍牙廣播名稱
+CONFIG_BT_CTLR_TX_PWR_PLUS_8=y # 提升藍牙傳輸功率
+CONFIG_CLOCK_CONTROL_NRF_K32SRC_RC=y # 使用內部 RC 振盪器
+CONFIG_CLOCK_CONTROL_NRF_K32SRC_500PPM=y # RC 振盪器精度設定
 
-# 藍牙廣播名稱
-CONFIG_ZMK_KEYBOARD_NAME="Outsider"
+# 電池設定
+CONFIG_ZMK_BATTERY_REPORTING=n # 關閉電池報告功能
 
-# USB 狀態設定
-# 強制開啟 USB 鍵盤訊號支援
+# USB 設定
 CONFIG_ZMK_USB=y
 ```
 
 如果這部分沒有設定好，`MCU` 會裝死給你看，你用其他藍牙設備也搜尋不到訊號，但連接設備的藍色燈光會一直閃爍。
 
-3. 然後就可以執行 `uf2` 韌體編譯了。
+3. 然後打開 `.keymap` 檔案，將控制藍牙的按鍵功能設定進 `keymap` 裡面：
+
+``` c
+#include <dt-bindings/zmk/outputs.h> // 有使用到 OUT_* 系列的按鈕，參閱官方 Output Selection 文本
+... 前略。
+        // Layer 3: System/Control
+        sys_layer {
+            display-name = "System Layer";
+            bindings = <
+                &bt BT_CLR   &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &out OUT_BLE &out OUT_USB &none  &none  &kp INS  &kp SLCK &kp PAUSE_BREAK  &kp PSCRN 
+                &kp CAPS     &none        &none        &none        &none        &none        &none  &none  &none    &none    &none            &none
+                &none        &none        &none        &none        &none        &none        &none  &none  &none    &none    &none            &none
+                &none        &none        &none        &none        &none        &none        &none  &none  &none    &none    &none            &to 0      &none
+            >;
+            // 藍牙設定的按鍵功能可以參閱 zmk 官方的文本進行寫入。
+        };
+        ...
+```
+
+藍牙連接的設備最多可以設定 `5` 組，這裡我只有設定一般市面上常規的 `3` 組連接設定。
 
 <br>
