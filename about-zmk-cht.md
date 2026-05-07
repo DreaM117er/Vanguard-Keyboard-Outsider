@@ -326,7 +326,7 @@ config SHIELD_CUSTOM_KEYBOARD
       <img src="pic/info/rp2040.jpg" width="100%" alt="rp2040">
     </td>
     <td width="50%">
-      <img src="pic/info/nRF52840.png" width="100%" alt="nRF52840">
+      <img src="pic/info/nrf52840.png" width="100%" alt="nRF52840">
     </td>
   </tr>
 </table>
