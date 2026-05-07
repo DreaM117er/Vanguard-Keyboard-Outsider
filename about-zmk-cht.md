@@ -261,7 +261,7 @@ cd zmk/app
 然後再執行 `west build` 指令：
 
 ``` bash
-west build -p -b nice_nano -- -DSHIELD=outsider -DZMK_CONFIG="[你的 XXX-zmk-config 資料夾路徑]"
+west build -p -b nice_nano -- -DSHIELD=<custom_keyboard> -DZMK_CONFIG="[你的 XXX-zmk-config 資料夾路徑]"
 ```
 
 > 超級重要：系統就會將 `uf2` 韌體建制在 `~/XXX-zmk-config/zmk/app/build/zephyr` 資料夾內部，一個叫做 `zmk.uf2` 的檔案。
