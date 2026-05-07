@@ -47,19 +47,19 @@
 
 1. 終端機執行更新（不同發行版有各自的差異）：
 
-``` markdown
+``` bash
 sudo apt update
 ```
 
 2. 安裝 `Python3` 與 `pip3`：
 
-``` markdown
+``` bash
 sudo apt install python3 python3-pip
 ```
 
 3. 安裝 `west`：
 
-``` markdown
+``` bash
 pip3 install west
 ```
 
@@ -71,19 +71,19 @@ pip3 install west
 
 1. 安裝虛擬環境建制工具：
 
-``` markdown
+``` bash
 sudo apt install python3-venv
 ```
 
 2. 在 `cd` 資料目錄下，建立 `zmk-env` 的隔離環境。
 
-``` markdown
+``` bash
 python3 -m venv ~/zmk-env
 ```
 
 3. 啓動隔離環境，你會發現終端機前面多了一行 `(zmk-env)`。
 
-``` markdown
+``` bash
 source ~/zmk-env/bin/activate
 ```
 
@@ -152,7 +152,7 @@ manifest:
 
 2. 然後打開終端機，在 `zmk cd` 資料夾下，執行 `west update` 指令，來向 `zmk` 宇宙宣告我要使用 `main` 直接燒錄韌體。
 
-``` markdown
+``` bash
 zmk cd
 west update
 ```
@@ -167,7 +167,7 @@ west update
 
 1. 首先定位在 `zmk cd` 主資料夾，然後新增 `.gitignore`。
 
-``` markdown
+``` bash
 zmk cd
 touch .gitignore
 ```
@@ -207,44 +207,65 @@ git push
 
 #### 導入 zephyr 引擎
 
+.gitignore 的功能上述已經提及，這裡就不重複說明了。
 
+west update 的功能呢？它的用意指「協助你將幾 GB 的純文字檔（原始碼）從 GitHub 搬到你的硬碟裡」，但它不具備轉換成韌體 uf2 的功能，由於 zmk 是基於 Zephyr RTOS 運作的嵌入式系統 OS ，我們就必須掛載它的相依性套件：
+- CMake / Ninja。
+- Python 資料庫。
+- Zephyr SDK。
 
+<br>
 
+1. 確保你的終端機環境是在「可編譯」狀態下，執行「安裝 CMake / Ninja」步驟：
 
+> 備註：`(zmk-env)`、`source ~/zmk-env/bin/activate`
 
+``` bash
+sudo apt install -y cmake ninja-build device-tree-compiler wget xz-utils
+```
 
+2. 鎖定 `XXX-zmk-config` 資料夾，執行：
 
+``` bash
+zmk cd
+pip install -r zephyr/scripts/requirements.txt
+```
 
+3. 向 CMake 註冊 Zephyr 引擎路徑：
 
+``` bash
+west zephyr-export
+```
 
+4. 安裝 Zephyr SDK（uf2 編譯器）：
 
+```bash
+cd ~
+wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.5-1/zephyr-sdk-0.16.5-1_linux-x86_64.tar.xz
+tar xvf zephyr-sdk-0.16.5-1_linux-x86_64.tar.xz
+cd zephyr-sdk-0.16.5-1
+./setup.sh -t arm-zephyr-eabi -c
+```
 
+> 注意：`setup.sh` 執行後，它會自動幫你把 `ARM` 的編譯器設定好，這專門用來對付 `nRF52840` 晶片。
 
+#### 韌體編譯
 
+5. 這樣一來，整個 `zmk` 宇宙及編譯環境就全數掛載完畢了，如果你後續要製作 `uf2` 韌體，就必須將資料夾鎖定在 `XXX-zmk-config` 目錄下。
 
+``` bash
+zmk cd
+```
 
+然後再執行 `west build` 指令：
 
+``` bash
+west build -s zmk/app -p -b nice_nano -- -DSHIELD=custom_keyboard -DZMK_CONFIG="[你的 XXX-zmk-config 資料夾路徑]"
+```
 
+> 超級重要：系統就會將 `uf2` 韌體建制在 `~/XXX-zmk-config/zmk/app/build/zephyr` 資料夾內部，一個叫做 `zmk.uf2` 的檔案。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<br>
 
 ## 教學開始
 
@@ -260,7 +281,7 @@ git push
 
 1. 執行 `zmk cd` 接著在目錄底下執行：
 
-``` markdown
+``` bash
 cd boards/shields
 mkdir <custom_keyboard>
 touch Kconfig.shield <custom_keyboard>.overlay <custom_keyboard>.keymap
@@ -289,7 +310,7 @@ config SHIELD_CUSTOM_KEYBOARD
 - 開發板驅動（例如：`PICO-W` 或 `SEED XIAO-BLE` 系列）。
 - `MOB` 驅動（`MCU on board`）。
 
-這裡我會介紹常用的開發板驅動，也就是 `NRF52840` 晶片的開發板（含 `nice nano v2`）做範例介紹，首先我們需要準備幾樣東西：
+這裡我會介紹常用的開發板驅動，也就是 `nRF52840` 晶片的開發板（含 `nice nano v2`）做範例介紹，首先我們需要準備幾樣東西：
 1. 開發板本體。
 2. 開發板規格書及腳位定義表。
 3. 鍵盤電路板原理圖（`PDF` 檔案或設計圖 ）。
@@ -305,7 +326,7 @@ config SHIELD_CUSTOM_KEYBOARD
       <img src="pic/info/rp2040.jpg" width="100%" alt="rp2040">
     </td>
     <td width="50%">
-      <img src="pic/info/nrf52840.png" width="100%" alt="nrf52840">
+      <img src="pic/info/nRF52840.png" width="100%" alt="nRF52840">
     </td>
   </tr>
 </table>
@@ -333,9 +354,9 @@ config SHIELD_CUSTOM_KEYBOARD
 2. 相同的 `I2C` 通訊頻道位在哪一個 `GPIO` 上，比如 `I2C0` `SDA`/`SCL` 的位置在 `GP0-1` 上。
 3. 同上，`SPI` 通訊腳位位於哪一些 `GPIO` 上，走 `SPI` 頻道可是會花上更多的 `GPIO` 來處理通訊資料。
 
-> 你要拿著有線開發板的 `GPIO` 腳位去對照 `NRF52840 ProMicro` 開發板的腳位是不是有功能的「交集」，然後把該腳位優先提取出來做佈線設計。
+> 你要拿著有線開發板的 `GPIO` 腳位去對照 `nRF52840 ProMicro` 開發板的腳位是不是有功能的「交集」，然後把該腳位優先提取出來做佈線設計。
 
-`NRF52840 ProMicro` 及 `nice nano v2` 的腳位及功能都是採用相同的設計方式（使用元件不同）：
+`nRF52840 ProMicro` 及 `nice nano v2` 的腳位及功能都是採用相同的設計方式（使用元件不同）：
 - 輸出電壓 `3V3`，`GND` 位置跟 `RP2040 ProMicro` 一樣。
 
 > 非常重要：全功能腳位都能輸出 `I2C` 通訊。雖然全功能皆可，但建議優先使用開發板預設標示的 `SDA/SCL` 腳位，以減少軟體定義的麻煩。
@@ -447,7 +468,7 @@ config SHIELD_CUSTOM_KEYBOARD
 
 > 補充說明：`zmk` 針對 `ProMicro` 腳位的開發板有一套專屬的腳位定義表，這裡請參照官方說明文本的頁面——https://zmk.dev/docs/troubleshooting/hardware-issues
 
-[ProMicro pinout](https://zmk.dev/assets/images/pinout-4ed4b6eb1e452a7be44c3a0143cd5605.png)
+![ProMicro pinout](https://zmk.dev/assets/images/pinout-4ed4b6eb1e452a7be44c3a0143cd5605.png)
 
 <br>
 
@@ -538,11 +559,7 @@ config SHIELD_CUSTOM_KEYBOARD
 至於整把鍵盤要做成什麼樣子的配列及調配花樣，這裡也是非常花時間的地方，假設你沒有多變化鍵位的需求，這部分就跳過。
 
 <table>
-  <tr>
-    <td width="50%">
       <img src="pic/info/layout2.png" width="100%" alt="layout2">
-    </td>
-  </tr>
 </table>
 
 <br>
@@ -635,16 +652,83 @@ config SHIELD_CUSTOM_KEYBOARD
             // 切換上一首/下一首歌
             sensor-bindings = <&inc_dec_kp C_NEXT C_PREV>;
         };
-
-        // Layer 3: System/Control
-        sys_layer {
-            ...
-            // 音量控制
-            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
-        };
-
-... 下略。
+...下略。
 ```
+
+<br>
+
+3. 脈衝的部分，我們必須打開 `.overlay` 檔案，在主區域定義上加入「旋鈕」的設定：
+
+``` c
+/ {
+    ...
+
+    /* Matrix Transform */
+    default_transform: keymap_transform_0 {
+    ...
+    };
+
+    /* Define Encoder */
+    left_encoder: encoder_left {
+        compatible = "alps,ec11";
+        a-gpios = <&pro_micro 2 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        b-gpios = <&pro_micro 3 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        steps = <80>; /* 物理上轉一圈有 80 個脈衝 */
+        status = "okay";
+    };
+
+    /* Encoder Sensor */
+    sensors {
+        compatible = "zmk,keymap-sensors";
+        sensors = <&left_encoder>;
+        triggers-per-rotation = <20>; /* 轉一圈只觸發 20 次動作 */
+    };
+};
+```
+
+這個部分就跟 QMK 的 Encoder 設定很相似：
+
+``` c
+// config.h
+
+/* Encoders */
+#define ENCODER_A_PINS { GP2 }
+#define ENCODER_B_PINS { GP3 }
+#define ENCODER_RESOLUTION 4
+
+// keymap.c
+#if defined(ENCODER_ENABLE) || defined(ENCODER_MAP_ENABLE)
+    const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
+        [0] = { ENCODER_CCW_CW(XXXXXXX, XXXXXXX) },
+        [1] = { ENCODER_CCW_CW(XXXXXXX, XXXXXXX) },
+        [2] = { ENCODER_CCW_CW(XXXXXXX, XXXXXXX) },
+        [3] = { ENCODER_CCW_CW(XXXXXXX, XXXXXXX) },
+    };
+#endif
+```
+
+在 `ZMK` 中，我們不需要像 `QMK` 那樣直接寫出 `ENCODER_RESOLUTION 4`，而是要告訴系統「轉一圈的總脈衝數 (`steps`)」以及「轉一圈的總段落數 (`triggers-per-rotation`)」。系統會自動把兩者相除，得出這顆旋鈕的脈衝倍率。以標準 `EC-11` 為例，通常是 `80` 個脈衝除以 `20` 個段落，得出 `4` 倍脈衝；若是滑鼠編碼器（滾輪），則通常兩者數值相同，為 `1` 倍脈衝。
+
+因此你還是必須要將滑鼠編碼器的「規格書」調閱出來，查閱該編碼器的脈衝值跟總數，然後將正確的值填入代碼中：
+
+``` c
+left_encoder: encoder_left {
+        compatible = "alps,ec11";
+        ...
+        steps = <24>;  /* 物理上轉一圈有 24 個脈衝 */
+    };
+
+    sensors {
+        ...
+        triggers-per-rotation = <12>; /* 轉一圈要觸發 24 次動作 */
+    };
+```
+
+<table>
+      <img src="pic/info/ec10e.png" width="100%" alt="data-ec10e">
+</table>
+
+這樣能理解吧。
 
 <br>
 
@@ -666,19 +750,36 @@ config SHIELD_CUSTOM_KEYBOARD
 
 ### 設備連接設定
 
+韌體核心功能及腳位設定完畢之後，接著要來設定「`MCU`」連接在「裝置」上的設定：
+- 藍牙通訊。
+- USB通訊。
 
+沒錯，有線及無線都要設置，`zmk` 韌體經過我跟朋友討論過後發現，它少了一個設定，鍵盤就會罷工。
 
+1. 首先回到 `XXX-zmk-config` 資料夾，執行：
 
+``` bash
+zmk cd
+cd config; touch <custom_keyboard>.conf
+```
 
+2. 然後將新增的 `.conf` 檔案打開，將連接設定寫入後存檔：
 
+``` conf
+# 藍牙功率
+# 強制將藍牙發射功率提升到最大 (8dBm)
+CONFIG_BT_CTLR_TX_PWR_PLUS_8=y
 
+# 藍牙廣播名稱
+CONFIG_ZMK_KEYBOARD_NAME="Outsider"
 
+# USB 狀態設定
+# 強制開啟 USB 鍵盤訊號支援
+CONFIG_ZMK_USB=y
+```
 
+如果這部分沒有設定好，`MCU` 會裝死給你看，你用其他藍牙設備也搜尋不到訊號，但連接設備的藍色燈光會一直閃爍。
 
+3. 然後就可以執行 `uf2` 韌體編譯了。
 
-
-
-
-
-
-
+<br>
