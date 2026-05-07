@@ -280,7 +280,7 @@ west build -p -b nice_nano -- -DSHIELD=<custom_keyboard> -DZMK_CONFIG="[你的 X
 
 <br>
 
-1. 執行 `zmk cd` 接著在目錄底下執行：
+1. 執行 `zmk cd`，接著在目錄底下執行：
 
 ``` bash
 cd boards/shields
@@ -351,7 +351,7 @@ config SHIELD_CUSTOM_KEYBOARD
 <br>
 
 雖然這裡我們不討論 `RP2040 ProMicro` 開發板，但還是要跟大家說明一下「爲什麼」我要放有線鍵盤的開發板出來？
-1. 你要知道 `VCC` 、 `GND` 的實際物理位置及電壓值。
+1. 你要知道 `VCC`、`GND` 的實際物理位置及電壓值。
 2. 相同的 `I2C` 通訊頻道位在哪一個 `GPIO` 上，比如 `I2C0` `SDA`/`SCL` 的位置在 `GP0-1` 上。
 3. 同上，`SPI` 通訊腳位位於哪一些 `GPIO` 上，走 `SPI` 頻道可是會花上更多的 `GPIO` 來處理通訊資料。
 
@@ -387,7 +387,7 @@ config SHIELD_CUSTOM_KEYBOARD
   </tr>
 </table>
 
-這裡先說明一個很常見的幾個誤區：
+這裡先說明兩個很常見的誤區：
 1. 矩陣大小「不等於」實際矩陣圖。
 2. 理想矩陣配置「不等於」實際矩陣配置。
 
@@ -534,7 +534,7 @@ config SHIELD_CUSTOM_KEYBOARD
 
 <br>
 
-以上 `Keymap` 是 最終我針對 `Outsider` 這把鍵盤的配列去調配出來的配列代碼，下面會放上在 `QMK` 裡面的 `keymap` 對照圖，基本上現在的有線鍵盤韌體（`QMK`）跟無線鍵盤韌體（`ZMK`）的部分，你在設計 `Keymap` 上應該不會差異太大。
+以上 `Keymap` 是最終我針對 `Outsider` 這把鍵盤的配列去調配出來的配列代碼，下面會放上在 `QMK` 裡面的 `keymap` 對照圖，基本上有線鍵盤韌體（`QMK`）跟無線鍵盤韌體（`ZMK`）的部分，你在設計 `Keymap` 上應該不會差異太大。
 
 <table>
   <tr>
@@ -571,10 +571,10 @@ config SHIELD_CUSTOM_KEYBOARD
 
 - `boards/shields`
     - 內部的子資料夾就是本地端的 `zmk` 星系中所有的鍵盤位置所在地。
-        - `Kconfig.shield` 爲行星的「旗標」，內部沒有設定就不存在該行星的存在。
+        - `Kconfig.shield` 爲行星的「旗標」，內部沒有設定該行星就不存在。
         - `.overlay` 檔案說明該行星運作規則，比方核心怎麼驅動、水流怎麼走等等。
         - `.keymap` 檔案定義該行星上有什麼東西，比方按鍵壓下去之後會跑出什麼資料給電腦。
-        - `.conf` 檔案用於設備的藍牙設定，後續會提到。
+        - `.conf` 檔案用於設備的連接設定，後續會提到。
 - `config`
     - 資料夾設定該星系的主要規則，比如全域變數設定、藍牙發射功率、深度休眠模式等。
     - `west.yml` 檔案用於選擇你要使用什麼版本的 `zmk` 韌體進行燒錄。
@@ -711,7 +711,7 @@ config SHIELD_CUSTOM_KEYBOARD
 
 在 `ZMK` 中，我們不需要像 `QMK` 那樣直接寫出 `ENCODER_RESOLUTION 4`，而是要告訴系統「轉一圈的總脈衝數 (`steps`)」以及「轉一圈的總段落數 (`triggers-per-rotation`)」。系統會自動把兩者相除，得出這顆旋鈕的脈衝倍率。以標準 `EC-11` 為例，通常是 `80` 個脈衝除以 `20` 個段落，得出 `4` 倍脈衝；若是滑鼠編碼器（滾輪），則通常兩者數值相同，為 `1` 倍脈衝。
 
-因此你還是必須要將滑鼠編碼器的「規格書」調閱出來，查閱該編碼器的脈衝值跟總數，然後將正確的值填入代碼中：
+因此你還是要將滑鼠編碼器的「規格書」調閱出來，查閱該編碼器的脈衝值跟總數，然後將正確的值填入代碼中：
 
 ``` c
 left_encoder: encoder_left {
@@ -729,8 +729,6 @@ left_encoder: encoder_left {
 <table>
       <img src="pic/info/ec10e.png" width="100%" alt="data-ec10e">
 </table>
-
-這樣能理解吧。
 
 <br>
 
@@ -754,7 +752,7 @@ left_encoder: encoder_left {
 
 韌體核心功能及腳位設定完畢之後，接著要來設定「`MCU`」連接在「裝置」上的設定：
 - 藍牙通訊。
-- USB通訊。
+- `USB` 通訊。
 
 沒錯，有線及無線都要設置，`zmk` 韌體經過我跟朋友討論過後發現，它少了一個設定，鍵盤就會罷工。
 
