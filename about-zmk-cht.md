@@ -115,7 +115,7 @@ source ~/zmk-env/bin/activate
 - `config`
     - 資料夾設定該星系的主要規則，比如全域變數設定、藍牙發射功率、深度休眠模式等。
     - `west.yml` 檔案用於選擇你要使用什麼版本的 `zmk` 韌體進行燒錄。
-    - `zmk.conf`、`xxx.conf` 檔案用於設備的藍牙設定，後續會提到。
+    - `zmk.conf`。
 - `zephyr`
     - `module.yml` 負責給予 `zephyr` 編譯系統宣告「這個星系是一個獨立的模組」。
 - `build.yaml`
@@ -261,7 +261,7 @@ cd zmk/app
 然後再執行 `west build` 指令：
 
 ``` bash
-west build -s zmk/app -p -b nice_nano -- -DSHIELD=custom_keyboard -DZMK_CONFIG="[你的 XXX-zmk-config 資料夾路徑]"
+west build -p -b nice_nano -- -DSHIELD=outsider -DZMK_CONFIG="[你的 XXX-zmk-config 資料夾路徑]"
 ```
 
 > 超級重要：系統就會將 `uf2` 韌體建制在 `~/XXX-zmk-config/zmk/app/build/zephyr` 資料夾內部，一個叫做 `zmk.uf2` 的檔案。
@@ -574,10 +574,11 @@ config SHIELD_CUSTOM_KEYBOARD
         - `Kconfig.shield` 爲行星的「旗標」，內部沒有設定就不存在該行星的存在。
         - `.overlay` 檔案說明該行星運作規則，比方核心怎麼驅動、水流怎麼走等等。
         - `.keymap` 檔案定義該行星上有什麼東西，比方按鍵壓下去之後會跑出什麼資料給電腦。
+        - `.conf` 檔案用於設備的藍牙設定，後續會提到。
 - `config`
     - 資料夾設定該星系的主要規則，比如全域變數設定、藍牙發射功率、深度休眠模式等。
     - `west.yml` 檔案用於選擇你要使用什麼版本的 `zmk` 韌體進行燒錄。
-    - `zmk.conf`、`xxx.conf` 檔案用於設備的藍牙設定，後續會提到。
+    - `zmk.conf`。
 - `zephyr`
     - `module.yml` 負責給予 `zephyr` 編譯系統宣告「這個星系是一個獨立的模組」。
 - `build.yaml`
@@ -770,12 +771,12 @@ cd boards/shields/<custom_keyboard>
 # 藍牙設定
 CONFIG_ZMK_BLE=y
 CONFIG_ZMK_KEYBOARD_NAME="<custom_keyboard_BLE>" # 藍牙廣播名稱
-CONFIG_BT_CTLR_TX_PWR_PLUS_8=y # 提升藍牙傳輸功率
-CONFIG_CLOCK_CONTROL_NRF_K32SRC_RC=y # 使用內部 RC 振盪器
-CONFIG_CLOCK_CONTROL_NRF_K32SRC_500PPM=y # RC 振盪器精度設定
+CONFIG_BT_CTLR_TX_PWR_PLUS_8=y                   # 提升藍牙傳輸功率
+CONFIG_CLOCK_CONTROL_NRF_K32SRC_RC=y             # 使用內部 RC 振盪器
+CONFIG_CLOCK_CONTROL_NRF_K32SRC_500PPM=y         # RC 振盪器精度設定
 
 # 電池設定
-CONFIG_ZMK_BATTERY_REPORTING=n # 關閉電池報告功能
+CONFIG_ZMK_BATTERY_REPORTING=n                   # 關閉電池報告功能
 
 # USB 設定
 CONFIG_ZMK_USB=y
