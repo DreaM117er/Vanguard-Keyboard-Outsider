@@ -207,16 +207,16 @@ git push
 
 #### 導入 zephyr 引擎
 
-.gitignore 的功能上述已經提及，這裡就不重複說明了。
+`.gitignore` 的功能上述已經提及，這裡就不重複說明了。
 
-west update 的功能呢？它的用意指「協助你將幾 GB 的純文字檔（原始碼）從 GitHub 搬到你的硬碟裡」，但它不具備轉換成韌體 uf2 的功能，由於 zmk 是基於 Zephyr RTOS 運作的嵌入式系統 OS ，我們就必須掛載它的相依性套件：
-- CMake / Ninja。
-- Python 資料庫。
-- Zephyr SDK。
+`west update` 的功能呢？它的用意指「協助你將幾 `GB` 的純文字檔（原始碼）從 `GitHub` 搬到你的硬碟裡」，但它不具備轉換成韌體 `uf2` 的功能，由於 `zmk` 是基於 `Zephyr RTOS` 運作的嵌入式系統 `OS` ，我們就必須掛載它的相依性套件：
+- `CMake` / `Ninja`。
+- `Python` 資料庫。
+- `Zephyr SDK`。
 
 <br>
 
-1. 確保你的終端機環境是在「可編譯」狀態下，執行「安裝 CMake / Ninja」步驟：
+1. 確保你的終端機環境是在「可編譯」狀態下，執行「安裝 `CMake` / `Ninja`」步驟：
 
 > 備註：`(zmk-env)`、`source ~/zmk-env/bin/activate`
 
@@ -231,13 +231,13 @@ zmk cd
 pip install -r zephyr/scripts/requirements.txt
 ```
 
-3. 向 CMake 註冊 Zephyr 引擎路徑：
+3. 向 `CMake` 註冊 `Zephyr` 引擎路徑：
 
 ``` bash
 west zephyr-export
 ```
 
-4. 安裝 Zephyr SDK（uf2 編譯器）：
+4. 安裝 `Zephyr SDK`（`uf2` 編譯器）：
 
 ```bash
 cd ~
@@ -688,7 +688,7 @@ config SHIELD_CUSTOM_KEYBOARD
 };
 ```
 
-這個部分就跟 QMK 的 Encoder 設定很相似：
+這個部分就跟 `QMK` 的 `Encoder` 設定很相似：
 
 ``` c
 // config.h
