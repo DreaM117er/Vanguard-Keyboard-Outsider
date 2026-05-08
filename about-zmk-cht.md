@@ -311,7 +311,7 @@ config SHIELD_CUSTOM_KEYBOARD
 - 開發板驅動（例如：`PICO-W` 或 `SEED XIAO-BLE` 系列）。
 - `MOB` 驅動（`MCU on board`）。
 
-這裡我會介紹常用的開發板驅動，也就是 `nRF52840` 晶片的開發板（含 `nice nano v2`）做範例介紹，首先我們需要準備幾樣東西：
+這裡我會介紹常用的開發板驅動，也就是 `nRF52840` 晶片的開發板（含 `nice!nano v2`）做範例介紹，首先我們需要準備幾樣東西：
 1. 開發板本體。
 2. 開發板規格書及腳位定義表。
 3. 鍵盤電路板原理圖（`PDF` 檔案或設計圖 ）。
@@ -338,7 +338,7 @@ config SHIELD_CUSTOM_KEYBOARD
 
 > 特別注意「電壓（`VCC`）」跟「接地（`GND`）」的位置及大小值，這個在電路設計裡面相當重要，用錯設計方法，可是會損壞你的開發板跟電路板的。
 
-> `nice nano v2` 跟 `clones` 的差異最大體現在「`VCC`」的大小，我記得沒錯的話，早期的 `nice nano` 開發板 `VCC` 輸出是 `4.3V`，不是 `3V3`。
+> `nice!nano v2` 跟 `clones` 的差異最大體現在「`VCC`」的大小，我記得沒錯的話，早期的 `nice!nano` 開發板 `VCC` 輸出是 `4.3V`，不是 `3V3`。
 
 電路設計裡面幾個很簡單的概念讓大家知道一下：
 - 輸出電壓不對就會罷工，或是燒掉。
@@ -357,7 +357,7 @@ config SHIELD_CUSTOM_KEYBOARD
 
 > 你要拿著有線開發板的 `GPIO` 腳位去對照 `nRF52840 ProMicro` 開發板的腳位是不是有功能的「交集」，然後把該腳位優先提取出來做佈線設計。
 
-`nRF52840 ProMicro` 及 `nice nano v2` 的腳位及功能都是採用相同的設計方式（使用元件不同）：
+`nRF52840 ProMicro` 及 `nice!nano v2` 的腳位及功能都是採用相同的設計方式（使用元件不同）：
 - 輸出電壓 `3V3`，`GND` 位置跟 `RP2040 ProMicro` 一樣。
 
 > 非常重要：全功能腳位都能輸出 `I2C` 通訊。雖然全功能皆可，但建議優先使用開發板預設標示的 `SDA/SCL` 腳位，以減少軟體定義的麻煩。
@@ -623,7 +623,7 @@ config SHIELD_CUSTOM_KEYBOARD
 ... 下略。
 ```
 
-以上是單一旋鈕值的設置，如果你在各個 `Layer` 層操作旋鈕都想要一樣的輸出值，那麼只要在 `default_layer` 做 `sensor-bindings` 的宣告即可。
+單一旋鈕的旋值，需要在每層 `Layer` 中都複製一個相同的 `sensor-bindings`。
 
 如果是「每層 `Layer` 都不同的旋值」，那麼你要在每個 `Layer` 層底部都插入相應的 `sensor-bindings` 宣告。
 
@@ -730,10 +730,65 @@ left_encoder: encoder_left {
       <img src="pic/info/ec10e.png" width="100%" alt="data-ec10e">
 </table>
 
+4. 填好脈衝值後，最後將 `.conf` 檔案打開，把旋鈕的全域設定代碼寫入設置裡面，存檔後關閉它。
+
+``` conf
+...
+# 編碼器設定
+CONFIG_EC11=y
+CONFIG_EC11_TRIGGER_GLOBAL_THREAD=y              # 允許旋鈕硬體中斷觸發全域執行緒
+```
+
 <br>
 
 #### 指標設備
 
+指標設備的話，你需要準備 `2` 件事情：
+- 該指標設備的驅動方式。
+    - 指標設備規格書。
+    - 指標設備的元件本體。
+- 你的設計圖。
+    - 引腳 `IO` 是不是支援指標設備的通訊方式？
+
+> 非常重要：指標設備需要多少的「電壓（`VCC`、`VDD`）」驅動？
+
+常見的指標設備有「光學感應器（`sensor`）」、「搖桿編碼器（`joysitck`）」及「觸控板（`trackpad`）」，這三者涵蓋市面上 `95%` 以上的操作方式，這裡簡單介紹一下：
+1. 光學感應器通常是由「元件本體」及「光學透鏡」的方式組合而成，缺一不可，需要離「感應接觸面」一段距離才能正常發揮作用。
+    - 滑鼠（`mouse`）：元件及透鏡朝下，感應桌面。
+    - 軌跡球（`trackball`）：元件及透鏡不朝下，感應「定規」的球體。
+2. 遙桿編碼器，通常稱作「搖桿」、「小紅點（`trackpoint`）」，操作方式爲 `X`、`Y` 軸平面移動量，比較特殊的遙感編碼計算操作方式，會有 `Z` 軸的垂直量，不過在指標設備裡通常不大會用到。
+3. 觸控板比較特殊，是在一定大小的平面電路感測板區域，做 `X`、`Y` 軸的計算，跟搖桿一樣，比較特殊的觸控板 `MCU` 可以計算 `Z` 軸的高度，也就是壓力值。
+    - 常用的有 `Azoteq` 系列、`Cirque` 系列，這是 `qmk` 及 `zmk` 通用的型號，近期有設計師將 `Azoteq` 的觸控板也設計進 `zmk` 裡面了，我到時候也會向他學習。
+
+<br>
+
+`Outsider` 這把鍵盤是支援 `Azoteq TPS43` 及 `Cirque TM040040` 等這兩種觸控板的，我在設計上將 `EC-11`、`TPS43`、`TM040040` 等三種設備設置在相同的腳位上了。
+
+先來看我怎麼設計：
+- `EC-11`：
+
+
+
+
+
+
+
+
+- `Azoteq TPS43`：
+
+
+
+
+
+- `Cirque TM040040`：
+
+
+
+
+
+
+
+- `ProMicro` 及 `nRF52840 ProMicro` （`nice!nano v2`）
 
 
 
@@ -743,6 +798,29 @@ left_encoder: encoder_left {
 
 
 
+1. 首先，我們已經將 `#include <dt-bindings/zmk/pointing.h>` 宣告在 `.keymap` 的上方了，這點很重要。
+2. 將指標設定寫入 `.conf` 裡面，存檔後關閉：
+
+``` conf
+# 指標設備功能
+CONFIG_ZMK_POINTING=y
+CONFIG_ZMK_POINTING_SMOOTH_SCROLLING=y          # 平滑滾輪功能
+```
+
+3. 再來寫入 .overlay 的核心功能設定：
+
+``` c
+... 獨立區塊。
+&i2c0 {
+    status = "okay";
+    /* 定義觸控板設備位址與參數 */
+    glidepoint: glidepoint@2a {
+        compatible = "cirque,igpt";
+        reg = <0x2a>;
+        dr-gpios = <&pro_micro 1 GPIO_ACTIVE_HIGH>; // 數據就緒中斷引腳
+    };
+};
+```
 
 
 
@@ -778,6 +856,7 @@ CONFIG_ZMK_BATTERY_REPORTING=n                   # 關閉電池報告功能
 
 # USB 設定
 CONFIG_ZMK_USB=y
+...
 ```
 
 如果這部分沒有設定好，`MCU` 會裝死給你看，你用其他藍牙設備也搜尋不到訊號，但連接設備的藍色燈光會一直閃爍。
