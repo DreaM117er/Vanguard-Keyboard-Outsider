@@ -63,6 +63,12 @@ sudo apt install python3 python3-pip
 pip3 install west
 ```
 
+掛載完畢之後，我們的 `XXX-zmk-config` 資料夾就會變成這樣：
+
+![dir-tree2](pic/info/dir-tree2.png)
+
+<br>
+
 <br>
 
 ### 相依性套件錯誤處理
@@ -976,30 +982,76 @@ CONFIG_ZMK_POINTING_SMOOTH_SCROLLING=y          # 平滑滾輪功能
 
 #### 掛載第三方資料庫
 
+雖然 Gemini 有跟我提到網路上有很多大神級別的工程師在開發 `zmk` 的指標裝置韌體，但實際上我查到的目前也只有 [`halfdane`](https://github.com/halfdane) 大神的，根據時間段判斷，就是他們團隊的開發，在約一年前的時間（2025 年）讓 zmk 有了很巨大的突破。
 
+——這裡我們要感謝他們：https://github.com/halfdane/zmk-input-gestures
 
+進入到第三方函式庫的 GitHub 主頁，其實他們有教導大家要如何「掛載」第三方函式庫，這裡我還是會再簡化一下流程。
 
+![3rd](pic/info/3rd.png)
 
+<br>
 
+![dir-tree2](pic/info/dir-tree2.png)
 
+1. 本地端這裡我們先回到 `XXX-zmk-config` 目錄下，進入到 `west` 資料夾內：
 
+``` bash
+# 指標設備
+zmk cd
+cd west
+```
 
+2. 將 `west.wml` 打開，按照第三方函式庫的操作，將掛載內容貼入檔案內後，存檔。
 
+``` yaml
+manifest:
+  defaults:
+    revision: main
+  remotes:
+    - name: zmkfirmware
+      url-base: https://github.com/zmkfirmware
+    # Additional modules containing boards/shields/custom code can be listed here as well
+    # See https://docs.zephyrproject.org/3.2.0/develop/west/manifest.html#projects
 
+    # 這裡加入第三方函式庫的 GitHub 主頁
+    - name: halfdane
+      url-base: https://github.com/halfdane/
+  projects:
+    - name: zmk
+      remote: zmkfirmware
+      import: app/west.yml
+    # 在這底部加入其他模組
+    - name: zmk-input-gestures
+      remote: halfdane
+      revision: main
+    # 這裡是 absolute mode 的模組，包含了觸控板的驅動和手勢處理
+    - name: zmk-input-processors
+      remote: halfdane
+      revision: main
+    - name: cirque-input-module
+      remote: halfdane
+      revision: absolute_mode
+  self:
+    path: config
+```
 
+3. 然後在終端機執行 `west update` 指令，然後等它掛載完畢。
+4. 接著還是要手動打開 `.gitignore` 將第三方掛載的函式庫資料夾寫入排除名單內：
 
+``` .gitignore
+/zmk-input-gestures/
+/zmk-input-processors/
+/cirque-input-module/
+```
 
+5. 將 `.gitignore` 先行更新上 GitHub，然後一樣又可以正常修改鍵位、新增鍵盤了。
 
-
-
-
-
-
-
-
-
-
-
+``` bash
+git add .gitignore
+git commit -m "add new module in config"
+git push
+```
 
 <br>
 
@@ -1008,6 +1060,8 @@ CONFIG_ZMK_POINTING_SMOOTH_SCROLLING=y          # 平滑滾輪功能
 1. `I2C` 跟 `SPI` 是什麼其實不太重要，你只需要看著「腳位圖」去對照 `qmk` 或 `zmk` 的文本，針對「設備」的通訊方式去做處理即可，簡單說就是看圖畫葫蘆，你不用知道太多艱深的知識。
 
 真的要說明的話，我也不懂什麼是 `I2C` 跟 `SPI`，我只知道它是「通訊法則」，還有「怎麼接線」及「初步功能」而已。
+
+<br>
 
 2. `I2C` 唯一要注意的是「上拉電阻」，爲什麼是 `4.7K`？
 
@@ -1018,6 +1072,8 @@ CONFIG_ZMK_POINTING_SMOOTH_SCROLLING=y          # 平滑滾輪功能
 簡單說，你只要看到是 `3V3` 驅動的 `I2C` 設備，毫不猶豫選擇 `4.7K` 就對了。
 
 至於電阻規格，在 `3V3` 的世界裡其實只要是 `4.7K` 都行，你要用 `1/2W` 大小的電阻我也不反對。
+
+<br>
 
 3. 文章前面有提到「`nRF52840` 全功能腳位都能輸出 `I2C` 通訊」，因此它還有一個備援選項，直接開啓開發板內部的 `I2C` 上拉電阻去做設備的頻道匹配：
 
@@ -1038,6 +1094,8 @@ CONFIG_ZMK_POINTING_SMOOTH_SCROLLING=y          # 平滑滾輪功能
 ```
 
 假設你的電路設計已經有「上拉電阻」，就跳過這個步驟。
+
+> 注意：如果你的指標裝置不是使用 `I2C` 通訊，這裡務必參考官方的文本去設定——https://zmk.dev/docs/development/hardware-integration/pointing
 
 <br>
 
