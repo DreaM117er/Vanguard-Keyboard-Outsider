@@ -988,8 +988,6 @@ CONFIG_ZMK_POINTING_SMOOTH_SCROLLING=y          # 平滑滾輪功能
 
 首先進入到第三方函式庫的 `GitHub` 主頁，其實他們有教導大家要如何「掛載」第三方函式庫，這裡我還是會再簡化一下流程。
 
-![3rd](pic/info/3rd.png)
-
 <br>
 
 ![dir-tree2](pic/info/dir-tree2.png)
