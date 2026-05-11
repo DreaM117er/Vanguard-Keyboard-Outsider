@@ -1031,9 +1031,10 @@ manifest:
     - name: zmk-input-processors
       remote: halfdane
       revision: main
-    - name: cirque-input-module
-      remote: halfdane
-      revision: absolute_mode
+    # 底下的函式庫會跟官方的產生衝突，先不要進行掛載
+    # - name: cirque-input-module 
+    #   remote: halfdane
+    #   revision: absolute_mode
   self:
     path: config
 ```
@@ -1059,47 +1060,14 @@ git push
 
 #### 韌體模組代碼設定
 
+> 注意事項：由於硬體端經過 `Outsider` 電路板的除錯過程當中發現 `zmk` 韌體系統底層強制要求設計者使用：
+> 
+> 1. `SPI` 通訊協議：`CS`。
+> 2. `I2C` 通訊協議：`RDY`。
+> 
+> 這個部分我會另闢在底部一個大標題，轉而使用麵包板來讓大家知道運作的原理。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<br>
 
 #### 補充說明
 
