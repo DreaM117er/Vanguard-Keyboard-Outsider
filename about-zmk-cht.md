@@ -1089,30 +1089,6 @@ git push
 
 <br>
 
-3. 文章前面有提到「`nRF52840` 全功能腳位都能輸出 `I2C` 通訊」，因此它還有一個備援選項，直接開啓開發板內部的 `I2C` 上拉電阻去做設備的頻道匹配：
-
-``` c
-&pinctrl {
-    i2c0_default: i2c0_default {
-        group1 {
-            psels = <NRF_PSEL(TWIM_SDA, 0, 17)>,
-                    <NRF_PSEL(TWIM_SCL, 0, 20)>;
-            bias-pull-up; /* 強制開啟內部上拉電阻 */
-        };
-    };
-};
-
-/ {
-    chosen {
-        ...
-```
-
-假設你的電路設計已經有「上拉電阻」，就跳過這個步驟。
-
-> 注意：如果你的指標裝置不是使用 `I2C` 通訊，這裡務必參考官方的文本去設定——https://zmk.dev/docs/development/hardware-integration/pointing
-
-<br>
-
 ### D. 設備連接設定
 
 韌體核心功能及腳位設定完畢之後，接著要來設定「`MCU`」連接在「裝置」上的設定：
