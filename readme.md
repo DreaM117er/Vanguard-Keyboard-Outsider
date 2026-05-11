@@ -113,8 +113,20 @@
     <td width="50%">
       <img src="pic/outsider/T4.png" width="100%" alt="T4">
     </td>
+  </tr>
+</table>
+
+<br>
+
+#### 3D 部件
+
+<table>
+  <tr>
     <td width="50%">
       <img src="pic/outsider/T5.png" width="100%" alt="T5">
+    </td>
+    <td width="50%">
+      <img src="pic/outsider/T6.png" width="100%" alt="T6">
     </td>
   </tr>
 </table>
