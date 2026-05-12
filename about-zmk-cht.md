@@ -1312,7 +1312,7 @@ CONFIG_ZMK_STUDIO=y
     };
 ...下略。
 };
-
+```
 
 
 
