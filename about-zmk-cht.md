@@ -1179,14 +1179,80 @@ jobs:
 
 4. 然後按照標準流程操作，在 `Keymap Editor` 的界面上，它會讓你找不到鍵盤「`.keymap`」檔案，這個時候我們需要調整一下本地端的資料夾狀態：
 
+本地端資料夾目前的結構是這樣：
 
+![](pic/info/dir-tree2.png)
 
+<br>
 
+我們要將 boards 這個資料夾整個複製下來，然後將它複製一份到 `XXX-zmk-config/config` 底下，然後將 `boards/shields` 內部的 `<custom_keyboard>` 資料夾中，`<custom_keyboard>.keymap` 移動到 `XXX-zmk-config/config` 區域（看圖）：
 
+![](pic/info/dir-tree3.png)
 
+<br>
 
+5. 改好本地資料夾結構之後，回到 `XXX-zmk-config` 目錄下，將 `build.yaml` 打開來修正後存檔：
 
+``` yaml
+# This file generates the GitHub Actions matrix.
+# For simple board + shield combinations, add them to the top level board and
+# shield arrays, for more control, add individual board + shield combinations
+# to the `include` property. You can also use the `cmake-args` property to
+# pass flags to the build command, `snippet` to add a Zephyr snippet, and
+# `artifact-name` to assign a name to distinguish build outputs from each other:
+#
+# board: [ "nice_nano" ]
+# shield: [ "corne_left", "corne_right" ]
+# include:
+#   - board: bdn9_rev2
+#   - board: nice_nano
+#     shield: reviung41
+#   - board: nice_nano
+#     shield: corne_left
+#     snippet: studio-rpc-usb-uart
+#     cmake-args: -DCONFIG_ZMK_STUDIO=y
+#     artifact-name: corne_left_with_studio
+#
+---
+# 這裡按照格式將 <custom_keyboard> 的資料寫入
+include:
+  - board: nice_nano//zmk # 這裡務必在後面寫上 //zmk 確保 GitHub Action 編譯採用相容性編譯
+    shield: outsider
+```
 
+6. 然後回到終端機操作指令：
+
+``` bash
+zmk cd
+git add .
+git commit -m "set KME folder&update keymap"
+git push
+```
+
+7. 上傳修正之後，回到 `Keymap Editor` 的界面，刷新之後就會看到上方的編譯開始在跑，你可以點擊它進去看 `GitHub Actions` 編譯韌體的狀態如何。
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="pic/info/kme2.png" width="100%" alt="kme2">
+    </td>
+    <td width="50%">
+      <img src="pic/info/kme3.png" width="100%" alt="kme3">
+    </td>
+  </tr>
+</table>
+
+<br>
+
+> 註：`Keymap Editor` 簡稱。
+
+8. 然後如果 `GitHub Actions` 已經跑完韌體編譯，但 `KME` 界面沒有刷新的話，重新進入一次 `GitHub Actions`，底部有下載韌體的連結。
+
+![](pic/info/dir-tree4.png)
+
+<br>
+
+9. 接著就是大家熟悉的韌體燒錄的部分了，夠不夠簡單？
 
 <br>
 
