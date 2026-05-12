@@ -22,6 +22,19 @@
 
 <br>
 
+- 輔助搭配：
+    - `about-zmk` 教學文本。
+    - `QMK Firmware`：https://qmk.fm/
+    - `ZMK Firmware`：https://zmk.dev/
+    - `KLE`：https://www.keyboard-layout-editor.com/#/
+    - `nRF Connect SDK`：
+        - `Android` 連結：https://play.google.com/store/apps/details?id=no.nordicsemi.android.mcp&pcampaignid=web_share
+        - 電腦端：https://www.nordicsemi.com/Products/Development-tools/nrf-connect-for-desktop/download
+        - 用於初次藍牙發射訊號捕捉除錯用。
+    - `FreeCAD`。
+
+<br>
+
 ## 硬體設計
 
 ### 自由度及限制
@@ -37,7 +50,7 @@
 太極理論有「物極必反」的核心概念，任何的設計上也一樣，這把鍵盤給予了極致的自由度，它「目前」的限制列在下方：
 1. 支援焊接。
 2. 不支援 `Gateron Low Profile 2.0`，也就是 `GLP2.0`。
-3. 觸控板只支援 QMK 有線版。
+3. 觸控板只支援 `QMK` 有線版。
 
 <br>
 
@@ -216,40 +229,68 @@
 - 推薦戴上手套、口罩及護目鏡操作技術。
 
 - 操作技術推薦：
-    - 電烙鐵：恆溫控制攝氏 `250`-`330` 度間。
-        - `K`。
-        - `BC`。
-    - 焊錫：攝氏 `183` 度。
-    - 電線：
-        - 規格至少 `24`-`28` `AWG`。
-        - 顏色至少能清晰分辨 `2` 色。
+  - 電烙鐵：恆溫控制攝氏 `250`-`330` 度間。
+    - `K`。
+    - `BC`。
+  - 焊錫：攝氏 `183` 度。
+  - 電線：
+    - 規格至少 `24`-`28` `AWG`。
+    - 顏色至少能清晰分辨 `2` 色。
 
 - 操作工具：
-    - 壓線鉗：
-        - 需要能夠處理 PH2.0 規格。
-        - 多準備一些金屬端子備用。
-        - 先調整壓力卡楯，再做壓製動作。
-    - 剝線鉗：
-        - 用於鋰電池及其電量顯示模組使用。
+  - 壓線鉗：
+    - 需要能夠處理 `PH2.0` 規格。
+    - 多準備一些金屬端子備用。
+    - 先調整壓力卡楯，再做壓製動作。
+  - 剝線鉗：
+    - 用於鋰電池及其電量顯示模組使用。
 
 - 觸控板選配：
-    - `TM040040`：
-        - 需要焊接 `4.7K` 電阻。
-        - 需要自行移除觸控板上的 `R1` 電阻。
-    - `TPS43`：不需焊接電阻。
+  - `TM040040`：
+    - 需要焊接 `4.7K` 電阻。
+    - 需要自行移除觸控板上的 `R1` 電阻。
+    - 教學參考：
+      - [40mm Cirque GlidePoint Circle Trackpad Module DIY Kit for Split Mechanical Keyboard](https://shop.beekeeb.com/product/40mm-cirque-glidepoint-circle-trackpad-module-diy-kit-for-split-mechanical-keyboard/)
+      - [GlidePoint Cirque Trackpad TM040040 TM035035](https://keycapsss.com/keyboard-parts/parts/211/glidepoint-cirque-trackpad-tm040040-tm035035)
+  - `TPS43`：不需焊接電阻。
+
+<br>
+
+![](pic/guide/m1.png)
 
 - 關於跳線：
-    - 只需要焊接電路板其中一面即可。
-    - `PWR`：
-        - 一律根據 `MCU` 選擇 `3V3` 供電的位置。
-        - 通常 `3V3` 都在 `P1` 的位置上。
-    - `VCC`：
-        - 使用跳線：組裝 `TM040040` 觸控板時焊上。
-        - 不焊跳線：`4.7K` 電阻可不用解下就能將 `TM040040` 更替成 `TPS43`。
+  - 只需要焊接電路板其中一面即可。
+  - `PWR`：
+    - 一律根據 `MCU` 選擇 `3V3` 供電的位置。
+    - 通常 `3V3` 都在 `P1` 的位置上。
+  - `VCC`：
+    - 使用跳線：組裝 `TM040040` 觸控板時焊上。
+    - 不焊跳線：`4.7K` 電阻可不用解下就能將 `TM040040` 更替成 `TPS43`。
+
+<br>
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="pic/guide/m2.jpg" width="100%" alt="m2">
+    </td>
+    <td width="50%">
+      <img src="pic/guide/m3.jpg" width="100%" alt="m3">
+    </td>
+  </tr>
+</table>
+
+- 關於 `MCU`：
+  - 根據 `MCU` 的腳位圖安裝。
+  - 參照上圖「有 `2` 個 `GND`」的方向做判讀比較不容易裝反。
+
+<br>
 
 ### 圖標辨識
 
-
+|二極體有方向性|![](pic/guide/d1.png)|![](pic/guide/d2.png)|
+|--|--|--|
+|電阻不分方向|![](pic/guide/r1.png)|![](pic/guide/r2.png)|
 
 <br>
 
