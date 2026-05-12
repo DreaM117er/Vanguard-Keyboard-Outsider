@@ -1140,9 +1140,7 @@ CONFIG_ZMK_USB=y
 
 <br>
 
-### E. GUI 圖形化鍵位修改設定
-
-#### 架設 GitHub Actions
+### E. 架設 GitHub Actions
 
 相信大家對於 `GitHub Actions` 一定不陌生，這個功能可以讓你針對現有的 `zmk` 鍵盤韌體進行 `CI/CD` 的工作，讓你直接在線上進行按鍵修改、韌體編譯。而這個動作就是將「編譯」這份工作，交給雲端超級電腦去處理。
 
@@ -1256,110 +1254,6 @@ git push
 
 <br>
 
-#### ZMK Studio 即時鍵位配置
-
-ZMK 曾經被 QMK 玩家詬病——為什麼不能像 `VIA / VIAL` 那樣，插上線就能即時改鍵？
-
-官方聽到了這個聲音，於是推出了 `ZMK Studio`——它運作的底層邏輯 `VIA` 完全不同：`VIA` 是去讀寫鍵盤晶片裡的一小塊記憶體；而 `ZMK Studio` 是直接透過實體通訊去動態修改鍵盤記憶體裡的按鍵樹狀圖。
-
-簡單說，它只要能夠連線到「你的鍵盤」，不管是不是接著「`USB`」線，還是「藍牙」都可以改按鍵。
-
-<br>
-
-1. 首先我們需要檢查 `ZMK Studio` 的底層編譯套件有沒有安裝：
-
-``` bash
-sudo apt update
-sudo apt install protobuf-compiler
-pip install protobuf grpcio-tools
-```
-
-2. 首先我們需要進入到 `XXX-zmk-config` 目錄下，打開 `boards/shields/<custom_keyboard>/<custom_keyboard>.conf` 檔案，加入這行啓動代碼：
-
-``` conf
-# 開啟 ZMK Studio
-CONFIG_ZMK_STUDIO=y
-```
-
-3. 接著將 `.overlay` 打開了，寫入 `ZMK Studio` 能夠辨認的實體 `Layout` 代碼：
-
-``` c 
-... 上略。
-/ {
-    chosen {
-        zmk,kscan = &kscan0;
-        zmk,matrix_transform = &default_transform;
-        zmk,physical-layout = &physical_layout0;  /* 新增這行「使用實體 Layout_0」的代碼 */
-    };
-
-    /* 新增實體佈局節點 */
-    physical_layout0: physical_layout_0 {
-        compatible = "zmk,physical-layout";
-        display-name = "Default Layout";
-        kscan = <&kscan0>;
-        transform = <&default_transform>;
-        
-        /* 這裡需要定義每一顆按鍵的物理大小與座標 */
-        keys
-            = <&key_physical_attrs 100 100 0 0 0 0 0>    // 第一顆按鍵 (寬1U, 高1U, X=0, Y=0)
-            , <&key_physical_attrs 100 100 100 0 0 0 0>  // 第二顆按鍵 (寬1U, 高1U, X=1, Y=0)
-            // ... 必須將你 4x12 配列的每一顆按鍵座標都寫上去
-            ;
-    };
-
-    kscan0: kscan_0 {
-    ...
-    };
-...下略。
-};
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-3. 修正好之後將 `uf2` 韌體編譯出來燒錄。
-
-> 註：編譯做法不受限制，看是要用本地端編譯還是雲端都可。
-
-4. 燒錄韌體完畢之後，打開 `ZMK` 官方頁面，左上方有 `ZMK Studio` 的按鈕。
-
-
-
-
-
-
-
-
-
-
-
-
-
-<br>
-
 ## 物理除錯法則
 
 雖然 `zmk` 是一套關於無線鍵盤的「軟體」，但這部分應該算是我個人給大家的一個梳理邏輯的法則，給大家參考。
@@ -1400,8 +1294,103 @@ CONFIG_ZMK_STUDIO=y
 
 <br>
 
-### 指標設備
+## 指標設備
 
 > 建制中，請見諒。
 
 <br>
+
+## ZMK Studio 即時鍵位配置
+
+`ZMK` 曾經被 `QMK` 玩家詬病——為什麼不能像 `VIA / VIAL` 那樣，插上線就能即時改鍵？
+
+官方聽到了這個聲音，於是推出了 `ZMK Studio`——它運作的底層邏輯 `VIA` 完全不同：`VIA` 是去讀寫鍵盤晶片裡的一小塊記憶體；而 `ZMK Studio` 是直接透過實體通訊去動態修改鍵盤記憶體裡的按鍵樹狀圖。
+
+簡單說，它只要能夠連線到「你的鍵盤」，不管是不是接著「`USB`」線，還是「藍牙」都可以改按鍵。'
+
+> 警告：這裡屬於極端的知識盲區，以下文本說明都屬於「我個人」的開荒過程，如果在執行過程中有任何錯誤的地方，都屬於「正常範圍」。
+
+<br>
+
+### 前置作業
+
+1. 首先我們需要檢查 `ZMK Studio` 的底層編譯套件有沒有安裝：
+
+``` bash
+sudo apt update
+sudo apt install protobuf-compiler
+pip install protobuf grpcio-tools
+```
+
+2. 首先我們需要進入到 `XXX-zmk-config` 目錄下，打開 `boards/shields/<custom_keyboard>/<custom_keyboard>.conf` 檔案，加入這行啓動代碼：
+
+``` conf
+# 開啟 ZMK Studio
+CONFIG_ZMK_STUDIO=y
+```
+
+3. 接著將 `.overlay` 打開了，寫入 `ZMK Studio` 開關代碼：
+
+``` c
+... 上略。
+/ {
+    chosen {
+        zmk,kscan = &kscan0;
+        zmk,matrix_transform = &default_transform;
+        zmk,physical-layout = &physical_layout0;  /* 新增這行「使用實體 Layout_0」的代碼 */
+    };
+
+    /* 新增實體佈局節點 */
+    physical_layout0: physical_layout_0 {
+        compatible = "zmk,physical-layout";
+        display-name = "Default Layout";
+        kscan = <&kscan0>;
+        transform = <&default_transform>;
+        
+        /* 這裡需要定義每一顆按鍵的物理大小與座標 */
+        keys
+            = 
+            ;
+        /* 代碼座標系另闢章節說明 */
+    };
+
+    kscan0: kscan_0 {
+    ...
+    };
+...下略。
+};
+```
+
+### 座標系統
+
+「實體座標系統」是 `ZMK` 官方爲了對標 `VIA`/`VAIL` 而發明的新型計算系統，這裡我們需要先瞭解一下它的運作規則。
+
+- 物理座標
+  - 原點：`(X, Y)` = `(0, 0)`
+  - `X` 軸：往右為「正」值。
+  - `Y` 軸：往下爲「正」值。
+
+- 單位：
+  - `centi-keyunit`：以 `1/100` 爲單位計算「按鍵大小」，例如： `1U` = `100`。
+  - `centi-degree`：以 `1/100` 爲單位計算「角度」，`10`度 = `1000`。
+
+- `&key_physical_attrs`：
+  - `7` 個計算值。
+  - `physical_layout0: physical_layout_n` 內部以 `keys` 作爲子巨集（`n` 跟隨 `chosen` 定義的 `layout` 值）。
+  - 使用方法：`<&key_physical_attrs w h x y r rx ry>`
+
+|參數|角度|單位|
+|--|--|--|
+|`w`|`Width`（寬度）|`centi-keyunit`|
+|`h`|`Height`（高度）|`centi-keyunit`|
+|`x`|`X` 座標|按鍵「左上角」的 `X` 座標|
+|`y`|`Y` 座標|按鍵「左上角」的 `Y` 座標|
+|`r`|`Rotation`（旋轉）|`centi-degree`|
+|`rx`|`Rotation` `X`|旋轉中心點的 `X` 座標|
+|`ry`|`Rotation` `Y`|旋轉中心點的 `Y` 座標|
+
+<br>
+
+寫到這裡，你有沒有發現什麼東西？
+
+> 重要：`zmk` 官方並沒有發明什麼新的座標系統，而是將 `KLE` 的座標計算方式全部「乘以 `100`」再去做運算。
