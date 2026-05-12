@@ -1148,7 +1148,7 @@ CONFIG_ZMK_USB=y
 
 > 註：`CI/CD`：持續整合 / 持續部署。
 
-前面我們花了非非非非常大量的時間在架構 zmk 的編譯環境，在這個章節裡面，我會讓大家理解跟控制這兩部分——`GitHub Actions` 跟官方 `ZMK Studio` 的部分進行假設方法及架構解說。
+前面我們花了非非非非常大量的時間在架構 `zmk` 的編譯環境，在這個章節裡面，我會讓大家理解跟控制這兩部分——`GitHub Actions` 跟官方 `ZMK Studio` 的部分進行假設方法及架構解說。
 
 1. 首先回到本地 `GitHub` 資料夾中，我們需要確認 `XXX-zmk-config` 目錄下，找到 `.github/workflows/build.yaml` 檔案。
 
@@ -1167,7 +1167,7 @@ jobs:
 
 > 註：`.github` 資料夾前方有一個「`.`」，這代表它屬於隱藏檔案或資料夾的意思。
 
-2. ZMK 社群裡有一套非常成熟的網頁版圖形化界面，叫做「[`Keymap Editor`](https://nickcoutsos.github.io/keymap-editor/)」。
+2. `ZMK` 社群裡有一套非常成熟的網頁版圖形化界面，叫做「[`Keymap Editor`](https://nickcoutsos.github.io/keymap-editor/)」。
 
 我們需要使用它，先授權綁定你的 `GitHub` 帳號，然後選擇你的 `XXX-zmk-config` 倉庫。
 
@@ -1185,7 +1185,7 @@ jobs:
 
 <br>
 
-我們要將 boards 這個資料夾整個複製下來，然後將它複製一份到 `XXX-zmk-config/config` 底下，然後將 `boards/shields` 內部的 `<custom_keyboard>` 資料夾中，`<custom_keyboard>.keymap` 移動到 `XXX-zmk-config/config` 區域（看圖）：
+我們要將 `boards` 這個資料夾整個複製下來，然後將它複製一份到 `XXX-zmk-config/config` 底下，然後將 `boards/shields` 內部的 `<custom_keyboard>` 資料夾中，`<custom_keyboard>.keymap` 移動到 `XXX-zmk-config/config` 區域（看圖）：
 
 ![](pic/info/dir-tree3.png)
 
@@ -1216,7 +1216,7 @@ jobs:
 ---
 # 這裡按照格式將 <custom_keyboard> 的資料寫入
 include:
-  - board: nice_nano//zmk # 這裡務必在後面寫上 //zmk 確保 GitHub Action 編譯採用相容性編譯
+  - board: nice_nano//zmk # 這裡務必在後面寫上 //zmk 確保 GitHub Actions 採用相容性編譯
     shield: outsider
 ```
 
@@ -1257,6 +1257,104 @@ git push
 <br>
 
 #### ZMK Studio 即時鍵位配置
+
+ZMK 曾經被 QMK 玩家詬病——為什麼不能像 `VIA / VIAL` 那樣，插上線就能即時改鍵？
+
+官方聽到了這個聲音，於是推出了 `ZMK Studio`——它運作的底層邏輯 `VIA` 完全不同：`VIA` 是去讀寫鍵盤晶片裡的一小塊記憶體；而 `ZMK Studio` 是直接透過實體通訊去動態修改鍵盤記憶體裡的按鍵樹狀圖。
+
+簡單說，它只要能夠連線到「你的鍵盤」，不管是不是接著「`USB`」線，還是「藍牙」都可以改按鍵。
+
+<br>
+
+1. 首先我們需要檢查 `ZMK Studio` 的底層編譯套件有沒有安裝：
+
+``` bash
+sudo apt update
+sudo apt install protobuf-compiler
+pip install protobuf grpcio-tools
+```
+
+2. 首先我們需要進入到 `XXX-zmk-config` 目錄下，打開 `boards/shields/<custom_keyboard>/<custom_keyboard>.conf` 檔案，加入這行啓動代碼：
+
+``` conf
+# 開啟 ZMK Studio
+CONFIG_ZMK_STUDIO=y
+```
+
+3. 接著將 `.overlay` 打開了，寫入 `ZMK Studio` 能夠辨認的實體 `Layout` 代碼：
+
+``` c 
+... 上略。
+/ {
+    chosen {
+        zmk,kscan = &kscan0;
+        zmk,matrix_transform = &default_transform;
+        zmk,physical-layout = &physical_layout0;  /* 新增這行「使用實體 Layout_0」的代碼 */
+    };
+
+    /* 新增實體佈局節點 */
+    physical_layout0: physical_layout_0 {
+        compatible = "zmk,physical-layout";
+        display-name = "Default Layout";
+        kscan = <&kscan0>;
+        transform = <&default_transform>;
+        
+        /* 這裡需要定義每一顆按鍵的物理大小與座標 */
+        keys
+            = <&key_physical_attrs 100 100 0 0 0 0 0>    // 第一顆按鍵 (寬1U, 高1U, X=0, Y=0)
+            , <&key_physical_attrs 100 100 100 0 0 0 0>  // 第二顆按鍵 (寬1U, 高1U, X=1, Y=0)
+            // ... 必須將你 4x12 配列的每一顆按鍵座標都寫上去
+            ;
+    };
+
+    kscan0: kscan_0 {
+    ...
+    };
+...下略。
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3. 修正好之後將 `uf2` 韌體編譯出來燒錄。
+
+> 註：編譯做法不受限制，看是要用本地端編譯還是雲端都可。
+
+4. 燒錄韌體完畢之後，打開 `ZMK` 官方頁面，左上方有 `ZMK Studio` 的按鈕。
+
+
+
+
+
+
+
+
+
+
 
 
 
