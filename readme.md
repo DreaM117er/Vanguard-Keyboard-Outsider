@@ -23,8 +23,9 @@
 <br>
 
 - 輔助搭配：
-    - `about-zmk` 教學文本。
+    - `about-zmk-XXX` 教學文本。
     - `QMK Firmware`：https://qmk.fm/
+    - `VIAL`：https://get.vial.today/
     - `ZMK Firmware`：https://zmk.dev/
     - `KLE`：https://www.keyboard-layout-editor.com/#/
     - `nRF Connect SDK`：
@@ -85,7 +86,7 @@
 
 <br>
 
-#### 定位板及底板
+#### 定位板、主控把擋板及底板
 
 <table>
   <tr>
@@ -93,10 +94,13 @@
       <img src="pic/outsider/B1.png" width="100%" alt="B1">
     </td>
     <td width="50%">
-      <img src="pic/outsider/P1.png" width="100%" alt="P1">
+      <img src="pic/outsider/M.png" width="100%" alt="M">
     </td>
   </tr>
   <tr>
+    <td width="50%">
+      <img src="pic/outsider/P1.png" width="100%" alt="P1">
+    </td>
     <td width="50%">
       <img src="pic/outsider/P2.png" width="100%" alt="P2">
     </td>
@@ -110,21 +114,16 @@
 <table>
   <tr>
     <td width="50%">
-      <img src="pic/outsider/M.png" width="100%" alt="M">
-    </td>
-    <td width="50%">
       <img src="pic/outsider/T1.png" width="100%" alt="T1">
     </td>
-  </tr>
-  <tr>
     <td width="50%">
       <img src="pic/outsider/T2.png" width="100%" alt="T2">
     </td>
+  </tr>
+  <tr>
     <td width="50%">
       <img src="pic/outsider/T3.png" width="100%" alt="T3">
     </td>
-  </tr>
-  <tr>
     <td width="50%">
       <img src="pic/outsider/T4.png" width="100%" alt="T4">
     </td>
@@ -180,6 +179,7 @@
 |**名稱**|**規格**||||
 |觸控板|-|1|1|**選配**|
 |電阻|`1/4W` `4.7K`|2|2||
+|排線|`0.5x5mm` `FFC 12pin` `AA`|1|1||
 |排線座|`0.5mm` `FFC 12pin`|1|1|**不限翻蓋類型**|
 |螺絲|`M2x3`|20|24||
 |螺絲|`M2x6`|4|4||
@@ -189,6 +189,7 @@
 |銅柱|`M2x10` `ø3.05-4mm`|2|2|**無線主控**|
 |💡 **TPS43**|||||
 |觸控板|-|1|1|**選配**|
+|排線|`0.5x5mm` `FFC 6pin` `AA`|1|1||
 |排線座|`0.5mm` `FFC 6pin`|1|1|**不限翻蓋類型**|
 |螺絲|`M2x3`|20|24||
 |螺絲|`M2x6`|4|4||
@@ -360,6 +361,8 @@
 
 ### 共通部分
 
+> 注意事項：部分照片有線及無線版本交互在一起使用，但不會影響安裝。
+
 根據你的理想配列，首先將二極體焊上。
 
 <img src="pic/guide/g1.jpg" width="100%" alt="g1">
@@ -379,21 +382,87 @@
 
 <br>
 
+根據你選擇的 `MCU` 來決定是不是要先燒錄韌體還是先焊上去。
+- `RP2040`：
+  - 大部分版本先做燒錄動作。
+  - `Sea-Picro` 可以先焊接固定好之後再燒錄韌體。
+  - 燒錄韌體的方式普遍爲「按住 `BOOT` 按鈕」後接上裝置後將 `uf2` 韌體燒錄到內部。
+- `nRF52840`：
+  - 先焊接固定好之後再燒錄韌體。
+  - 接上裝置後，連續觸發「`2` 次」`RST` 按鈕，再將 `uf2` 韌體燒錄到內部。
 
+<img src="pic/guide/g3.jpg" width="100%" alt="g3">
 
+<br>
 
+`MCU` 焊接固定好、韌體也燒錄進去之後，下一步不要急著把軸體焊上去，你需要做幾件事情：
+1. 確認你的鍵盤矩陣有沒有動，也就是你的按鍵有沒有全部都觸發。
+  - `VIAL` 的 `Matrix Tester`。
+  - `ZMK Studio`——`about-zmk-XXX` 教學文本會說明。
+  - 第三方按鍵檢測器：https://hwtest.in/keyboard
+2. 確認你的模組有沒有正常驅動。
+  - `EC-11` 編碼器。
+  - 觸控板的指向裝置韌體操作。
+
+以上都沒問題，如果你是安裝觸控板，記得先把排線拔下來，再焊接軸體；如果是 `EC-11` 編碼器，就直接焊接軸體。
+
+<img src="pic/guide/g4.jpg" width="100%" alt="g4">
+<img src="pic/guide/g5.jpg" width="100%" alt="g5">
+
+> 注意事項：`EC-11` 可以不用焊接就直接裸測，我的照片示意圖裡就是這樣的操作。
 
 <br>
 
 ### 觸控板
 
+#### TPS43
 
+`TPS43` 的部分，首先需要準備好「觸控面」、「模組 `D`（框架）」，先將 `TPS43` 上頭的 `3M` 膠帶撕下來，跟觸控面一起結合固定好。
 
+<img src="pic/guide/g6.jpg" width="100%" alt="g6">
+<img src="pic/guide/g7.jpg" width="100%" alt="g7">
 
+<br>
+
+將銅柱安裝在整套模組上之後，接上排線，然後將主控擋板連同模組一起固定好，就可以安裝底板收尾了。
+
+<img src="pic/guide/g8.jpg" width="100%" alt="g8">
+<img src="pic/guide/g9.jpg" width="100%" alt="g9">
+
+<br>
+
+#### TM040040
+
+`TM040040` 的部分，需要將本體跟「模組 `A`、`B`、`C`」先組裝在一起，然後再安裝銅柱完成整套的模組。
+
+<img src="pic/guide/g10.jpg" width="100%" alt="g10">
+<img src="pic/guide/g11.jpg" width="100%" alt="g11">
+<img src="pic/guide/g12.jpg" width="100%" alt="g12">
+
+<br>
+
+`TM040040` 整套模組的安裝方式，要先將 `5mm` 排線接上，然後穿過洞口。
+
+<img src="pic/guide/g13.jpg" width="100%" alt="g13">
+
+> 最終完成安裝的示意圖會跟「教學」的完全一樣成「S」形。
+
+![](https://camo.githubusercontent.com/b15feb1fb0ef73124fbc38e109d9254808041f45607b13747b30ec43c3a2b845/68747470733a2f2f6265656b6565622e636f6d2f747261636b7061642f736964652e6a7067)
 
 <br>
 
 ### 關於電池
+
+
+
+
+
+
+
+
+
+
+
 
 
 
