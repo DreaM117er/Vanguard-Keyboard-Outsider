@@ -291,26 +291,26 @@
 <table>
   <tr>
     <td width="40%">
-      <li>二極體有方向性。</li>
-      <li>注意二極體前端的標線。</li>
+      <p>二極體有方向性。</p>
+      <p>注意二極體前端的標線。</p>
     </td>
     <td width="30%">
-      <img src="pic/guide/d1.png" width="100%" alt="m2">
+      <img src="pic/guide/d1.png" width="100%" alt="d1">
     </td>
     <td width="30%">
-      <img src="pic/guide/d2.png" width="100%" alt="">
+      <img src="pic/guide/d2.png" width="100%" alt="d2">
     </td>
   </tr>
   <tr>
     <td width="40%">
-      <li>電阻不分方向。</li>
-      <li>電阻請跟「MCU」一樣安裝在同一面。</li>
+      <p>電阻不分方向。</p>
+      <p>電阻請跟「MCU」一樣安裝在同一面。</p>
     </td>
     <td width="30%">
-      <img src="pic/guide/r1.png" width="100%" alt="m2">
+      <img src="pic/guide/r1.png" width="100%" alt="r1">
     </td>
     <td width="30%">
-      <img src="pic/guide/r2.png" width="100%" alt="">
+      <img src="pic/guide/r2.png" width="100%" alt="r2">
     </td>
   </tr>
 </table>
