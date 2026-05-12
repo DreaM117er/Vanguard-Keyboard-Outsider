@@ -174,7 +174,7 @@
 |輕觸開關|`SKRK` `2mm`|1|1|**選配**|
 |撥動開關|`MSKT-12D14`|1|1|**選配**|
 |小於 `501735`|`3.7V` 聚合物鋰電池|1|1|**選配，置於 MCU 上方**|
-|-|`3.7V` 鋰電池電量檢測模組|1|1|**選配**|
+|-|`3.7V` 鋰電池電量顯示模組|1|1|**選配**|
 |`PH2.0` `THT` 公母接頭|`JST PH S2B-PH-K`|1|1|**選配**|
 |💡 **TM040040**|||||
 |**名稱**|**規格**||||
@@ -288,9 +288,32 @@
 
 ### 圖標辨識
 
-|二極體有方向性|![](pic/guide/d1.png)|![](pic/guide/d2.png)|
-|--|--|--|
-|電阻不分方向|![](pic/guide/r1.png)|![](pic/guide/r2.png)|
+<table>
+  <tr>
+    <td width="40%">
+      <li>二極體有方向性。</li>
+      <li>注意二極體前端的標線。</li>
+    </td>
+    <td width="30%">
+      <img src="pic/guide/d1.png" width="100%" alt="m2">
+    </td>
+    <td width="30%">
+      <img src="pic/guide/d2.png" width="100%" alt="">
+    </td>
+  </tr>
+  <tr>
+    <td width="40%">
+      <li>電阻不分方向。</li>
+      <li>電阻請跟「MCU」一樣安裝在同一面。</li>
+    </td>
+    <td width="30%">
+      <img src="pic/guide/r1.png" width="100%" alt="m2">
+    </td>
+    <td width="30%">
+      <img src="pic/guide/r2.png" width="100%" alt="">
+    </td>
+  </tr>
+</table>
 
 <br>
 
