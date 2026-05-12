@@ -1248,7 +1248,7 @@ git push
 
 8. 然後如果 `GitHub Actions` 已經跑完韌體編譯，但 `KME` 界面沒有刷新的話，重新進入一次 `GitHub Actions`，底部有下載韌體的連結。
 
-![](pic/info/dir-tree4.png)
+![](pic/info/kme4.png)
 
 <br>
 
