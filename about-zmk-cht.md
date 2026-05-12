@@ -1142,12 +1142,55 @@ CONFIG_ZMK_USB=y
 
 ### E. GUI 圖形化鍵位修改設定
 
+#### 架設 GitHub Actions
+
+相信大家對於 `GitHub Actions` 一定不陌生，這個功能可以讓你針對現有的 `zmk` 鍵盤韌體進行 `CI/CD` 的工作，讓你直接在線上進行按鍵修改、韌體編譯。而這個動作就是將「編譯」這份工作，交給雲端超級電腦去處理。
+
+> 註：`CI/CD`：持續整合 / 持續部署。
+
+前面我們花了非非非非常大量的時間在架構 zmk 的編譯環境，在這個章節裡面，我會讓大家理解跟控制這兩部分——`GitHub Actions` 跟官方 `ZMK Studio` 的部分進行假設方法及架構解說。
+
+1. 首先回到本地 `GitHub` 資料夾中，我們需要確認 `XXX-zmk-config` 目錄下，找到 `.github/workflows/build.yaml` 檔案。
+
+然後將它打開：
+
+``` yaml
+name: Build ZMK firmware
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3 # 改成 main
+```
+
+然後將 `v0.3` 的部分改成 `main`，隨後存檔。
+
+> 註：`.github` 資料夾前方有一個「`.`」，這代表它屬於隱藏檔案或資料夾的意思。
+
+2. ZMK 社群裡有一套非常成熟的網頁版圖形化界面，叫做「[`Keymap Editor`](https://nickcoutsos.github.io/keymap-editor/)」。
+
+我們需要使用它，先授權綁定你的 `GitHub` 帳號，然後選擇你的 `XXX-zmk-config` 倉庫。
+
+<img src="pic/info/kme.png" width="100%" alt="kme">
+
+3. 接著按照 `Keymap Editor` 的指示操作，進入到 GitHub 的主頁面。
+
+> 特別注意：第一次執行 `Keymap Editor`，它會在你的 `GitHub` 帳號中安裝套件，然後選擇「設定」的時候，指向「`XXX-zmk-config`」倉庫。
+
+4. 然後按照標準流程操作，在 `Keymap Editor` 的界面上，它會讓你找不到鍵盤「`.keymap`」檔案，這個時候我們需要調整一下本地端的資料夾狀態：
 
 
 
 
 
 
+
+
+
+
+<br>
+
+#### ZMK Studio 即時鍵位配置
 
 
 
