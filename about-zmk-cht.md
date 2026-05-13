@@ -1327,16 +1327,24 @@ pip install protobuf grpcio-tools
 ``` conf
 # 開啟 ZMK Studio
 CONFIG_ZMK_STUDIO=y
+CONFIG_ZMK_STUDIO_LOCKING=n
 ```
 
 3. 接著將 `.overlay` 打開了，寫入 `ZMK Studio` 開關代碼：
 
 ``` c
-... 上略。
+#include <physical_layouts.dtsi> /* 加入 Physical Layout 資料庫 */
+
 / {
+    /* Physical Layout 宣告 */
+    key_physical_attrs: key_physical_attrs {
+        compatible = "zmk,key-physical-attrs";
+    };
+
     chosen {
         zmk,kscan = &kscan0;
-        zmk,matrix_transform = &default_transform;
+        /* 刪掉或屏蔽掉這行代碼，編譯 ZMK Studio 才不會報錯 */
+        // zmk,matrix_transform = &default_transform;
         zmk,physical-layout = &physical_layout0;  /* 新增這行「使用實體 Layout_0」的代碼 */
     };
 
@@ -1360,6 +1368,8 @@ CONFIG_ZMK_STUDIO=y
 ...下略。
 };
 ```
+
+<br>
 
 ### 座標系統
 
@@ -1450,14 +1460,14 @@ CONFIG_ZMK_STUDIO=y
 |`rx`|`Rotation` `X`|旋轉中心點的 `X` 座標|
 |`ry`|`Rotation` `Y`|旋轉中心點的 `Y` 座標|
 
-這裡我們要按照跟 QMK 一樣的代碼寫入法則去處理：
+這裡我們要按照跟 `QMK` 一樣的代碼寫入法則去處理：
 1. 先從做左邊到右邊，再做上到下。
 2. 紅色邊框的數值欄位分別對應上表：
-  - `Width`：`w`
-  - `Height`：`h`
-  - `X`：`x`
-  - `Y`：`y`
-  - `Rotation`：`r`, `rx`, `ry`
+    - `Width`：`w`
+    - `Height`：`h`
+    - `X`：`x`
+    - `Y`：`y`
+    - `Rotation`：`r`, `rx`, `ry`
 
 3. `<&key_physical_attrs w h x y r rx ry>`
 
@@ -1466,7 +1476,7 @@ CONFIG_ZMK_STUDIO=y
 以此可知，先把左上角第一顆按鍵的數值先定位好，然後紅框內的數值再 `x100` 之後填入：
 
 ```c
-<&key_physical_attrs 100 100   0   0 0 0>
+<&key_physical_attrs 100 100   0   0 0 0 0>
 ```
 
 <br>
@@ -1552,3 +1562,6 @@ CONFIG_ZMK_STUDIO=y
 };
 ```
 
+<br>
+
+5. 保險一點，我個人實作到這裡建議先編譯一次，看有沒有報錯再接下去製作其他的 `Layout`。
