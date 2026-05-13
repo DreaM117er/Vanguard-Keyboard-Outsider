@@ -1,4 +1,4 @@
-# ZMK Firmware初始化環境教學
+# ZMK Firmware 初始化環境教學
 
 ## 前言
 
