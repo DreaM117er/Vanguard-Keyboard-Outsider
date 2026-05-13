@@ -1641,7 +1641,8 @@ west build -p -b nice_nano -S studio-rpc-usb-uart -- -DSHIELD=<custom_keyboard> 
 
 首先是「優點」：
 - 可以不受連接限制修改按鍵功能。
-- 如果還有其他的，我會再補上（笑）。
+
+> 如果還有其他的有點，我會再補上（笑）。
 
 缺點：
 - 無官方教學文本——這個非常嚴重。
@@ -1658,7 +1659,7 @@ west build -p -b nice_nano -S studio-rpc-usb-uart -- -DSHIELD=<custom_keyboard> 
 <br>
 
 回到主題，`ZMK Studio` 的限制有哪些？
-1. 無法像 VIAL 那樣設定「選單式」修正「部分」Layout。
+1. 無法像 `VIAL` 那樣設定「選單式」修正「部分」`Layout`。
     - 自由度受限。
     - 代碼工程量非常龐大。
 
@@ -1672,6 +1673,8 @@ west build -p -b nice_nano -S studio-rpc-usb-uart -- -DSHIELD=<custom_keyboard> 
 如果這篇附贈的教學文章能夠讓大家在藍牙設備搜尋裡面「順利地」在列表上跑出來，那麼這個意義就不一樣了。
 
 我是 `DreaM117er`，來自臺灣的業餘鍵盤開發者，如果還有更多的機會，我會繼續開荒下去。
+
+<br>
 
 > 指向裝置我會再找時間用開發板獨立出來做開荒除錯，稍等我一陣子。
 
