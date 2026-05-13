@@ -1117,8 +1117,7 @@ cd boards/shields/<custom_keyboard>
 2. Then open the `.conf` file, write in the connection settings, and save:
 
 ``` conf
-# 藍牙設定
-C# Bluetooth Settings
+# Bluetooth Settings
 CONFIG_ZMK_BLE=y
 CONFIG_ZMK_KEYBOARD_NAME="<custom_keyboard_BLE>" # Bluetooth broadcast name
 CONFIG_BT_CTLR_TX_PWR_PLUS_8=y                   # Boost Bluetooth transmission power
