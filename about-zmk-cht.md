@@ -1339,6 +1339,7 @@ CONFIG_ZMK_STUDIO_LOCKING=n
     /* Physical Layout 宣告 */
     key_physical_attrs: key_physical_attrs {
         compatible = "zmk,key-physical-attrs";
+        #key-cells = <7>; /* 必須宣告陣列參數有 7 個，否則編譯會報錯 */
     };
 
     chosen {
