@@ -1300,9 +1300,9 @@ git push
 
 <br>
 
-## ZMK Studio 即時鍵位配置
+## ZMK Studio
 
-`ZMK` 曾經被 `QMK` 玩家詬病——為什麼不能像 `VIA / VIAL` 那樣，插上線就能即時改鍵？
+`ZMK` 曾經被 `QMK` 玩家詬病——為什麼不能像 `VIA`/`VIAL` 那樣，插上線就能即時改鍵？
 
 官方聽到了這個聲音，於是推出了 `ZMK Studio`——它運作的底層邏輯 `VIA` 完全不同：`VIA` 是去讀寫鍵盤晶片裡的一小塊記憶體；而 `ZMK Studio` 是直接透過實體通訊去動態修改鍵盤記憶體裡的按鍵樹狀圖。
 
@@ -1393,4 +1393,162 @@ CONFIG_ZMK_STUDIO=y
 
 寫到這裡，你有沒有發現什麼東西？
 
-> 重要：`zmk` 官方並沒有發明什麼新的座標系統，而是將 `KLE` 的座標計算方式全部「乘以 `100`」再去做運算。
+> 重要：`zmk` 官方並沒有發明什麼新的座標系統，而是將 `KLE` 的計算方式全部「乘以 `100`」再去做運算。
+
+<br>
+
+### KLE 轉換
+
+根據 `Gemini` 的輔助分析，針對 `ZMK Studio` 這部分，完全沒有任何的教學文本，甚至連官方也只告訴你有這個功能還有 `.conf` 要怎麼設置等等，但配套的源碼代碼都沒有說明。
+
+> 註 1：https://zmk.dev/docs/features/studio
+
+> 註 2：https://zmk.dev/docs/development/studio-rpc-protocol
+
+> 註 3：https://zmk.dev/docs/config/studio
+
+深入理解之後，我們先按照照片上的配列先做一份基礎的 `4x12` `Layout` 出來，然後再調整成標準 `Plank` 的配套。
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="pic/info/zmkstudio-default.png" width="100%" alt="default">
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="pic/info/zmkstudio-plank.png" width="100%" alt="plank">
+    </td>
+  </tr>
+</table>
+
+<br>
+
+> 這裡開始，會搭配 `Outsider` 專案資料夾下的 `.json` 檔案及網頁端的 `Keyboard Layout Editor` 進行說明。
+> 1. `zmkstudio-default.json`
+> 2. `zmkstudio-plank.json`
+
+<br>
+
+首先我們將 `KLE` 打開，然後將 `default` 的配列圖先匯入。
+
+![](pic/info/kle1.png)
+
+然後點選左上角第一顆按鍵，我來告訴大家接下來要怎麼去建制這個部分的代碼。
+
+<br>
+
+![](pic/info/kle2.png)
+
+|參數|角度|單位|
+|--|--|--|
+|`w`|`Width`（寬度）|`centi-keyunit`|
+|`h`|`Height`（高度）|`centi-keyunit`|
+|`x`|`X` 座標|按鍵「左上角」的 `X` 座標|
+|`y`|`Y` 座標|按鍵「左上角」的 `Y` 座標|
+|`r`|`Rotation`（旋轉）|`centi-degree`|
+|`rx`|`Rotation` `X`|旋轉中心點的 `X` 座標|
+|`ry`|`Rotation` `Y`|旋轉中心點的 `Y` 座標|
+
+這裡我們要按照跟 QMK 一樣的代碼寫入法則去處理：
+1. 先從做左邊到右邊，再做上到下。
+2. 紅色邊框的數值欄位分別對應上表：
+  - `Width`：`w`
+  - `Height`：`h`
+  - `X`：`x`
+  - `Y`：`y`
+  - `Rotation`：`r`, `rx`, `ry`
+
+3. `<&key_physical_attrs w h x y r rx ry>`
+
+<br>
+
+以此可知，先把左上角第一顆按鍵的數值先定位好，然後紅框內的數值再 `x100` 之後填入：
+
+```c
+<&key_physical_attrs 100 100   0   0 0 0>
+```
+
+<br>
+
+4. 然後你就可以依序把整把鍵盤的所有按鍵都建立起來了：
+
+```c
+/ {
+    chosen {
+        ...
+        zmk,physical-layout = &physical_layout0;
+    };
+
+    ... 中略。
+
+    /* Physical Layout */
+    physical_layout0: physical_layout_0 {
+        compatible = "zmk,physical-layout";
+        display-name = "Default Layout";
+        kscan = <&kscan0>;
+        transform = <&default_transform>;
+        
+        /* X,Y & Units */
+        keys
+            /* Row0, Row4 - col0-5 */
+            = <&key_physical_attrs 100 100    0    0 0 0 0>
+            , <&key_physical_attrs 100 100  100    0 0 0 0>
+            , <&key_physical_attrs 100 100  200    0 0 0 0>
+            , <&key_physical_attrs 100 100  300    0 0 0 0>
+            , <&key_physical_attrs 100 100  400    0 0 0 0>
+            , <&key_physical_attrs 100 100  500    0 0 0 0>
+            , <&key_physical_attrs 100 100  600    0 0 0 0>
+            , <&key_physical_attrs 100 100  700    0 0 0 0>
+            , <&key_physical_attrs 100 100  800    0 0 0 0>
+            , <&key_physical_attrs 100 100  900    0 0 0 0>
+            , <&key_physical_attrs 100 100 1000    0 0 0 0>
+            , <&key_physical_attrs 100 100 1100    0 0 0 0>
+            , <&key_physical_attrs 100 100 1325   50 0 0 0> // EC-11
+
+            /* Row1, Row5 - col0-5 */
+            , <&key_physical_attrs 100 100    0  100 0 0 0>
+            , <&key_physical_attrs 100 100  100  100 0 0 0>
+            , <&key_physical_attrs 100 100  200  100 0 0 0>
+            , <&key_physical_attrs 100 100  300  100 0 0 0>
+            , <&key_physical_attrs 100 100  400  100 0 0 0>
+            , <&key_physical_attrs 100 100  500  100 0 0 0>
+            , <&key_physical_attrs 100 100  600  100 0 0 0>
+            , <&key_physical_attrs 100 100  700  100 0 0 0>
+            , <&key_physical_attrs 100 100  800  100 0 0 0>
+            , <&key_physical_attrs 100 100  900  100 0 0 0>
+            , <&key_physical_attrs 100 100 1000  100 0 0 0>
+            , <&key_physical_attrs 100 100 1100  100 0 0 0>
+
+            /* Row2, Row6 - col0-5 */
+            , <&key_physical_attrs 100 100    0  200 0 0 0>
+            , <&key_physical_attrs 100 100  100  200 0 0 0>
+            , <&key_physical_attrs 100 100  200  200 0 0 0>
+            , <&key_physical_attrs 100 100  300  200 0 0 0>
+            , <&key_physical_attrs 100 100  400  200 0 0 0>
+            , <&key_physical_attrs 100 100  500  200 0 0 0>
+            , <&key_physical_attrs 100 100  600  200 0 0 0>
+            , <&key_physical_attrs 100 100  700  200 0 0 0>
+            , <&key_physical_attrs 100 100  800  200 0 0 0>
+            , <&key_physical_attrs 100 100  900  200 0 0 0>
+            , <&key_physical_attrs 100 100 1000  200 0 0 0>
+            , <&key_physical_attrs 100 100 1100  200 0 0 0>
+
+            /* Row3, Row7 - col0-5 */
+            , <&key_physical_attrs 100 100    0  300 0 0 0>
+            , <&key_physical_attrs 100 100  100  300 0 0 0>
+            , <&key_physical_attrs 100 100  200  300 0 0 0>
+            , <&key_physical_attrs 100 100  300  300 0 0 0>
+            , <&key_physical_attrs 100 100  400  300 0 0 0>
+            , <&key_physical_attrs 100 100  500  300 0 0 0>
+            , <&key_physical_attrs 100 100  600  300 0 0 0>
+            , <&key_physical_attrs 100 100  700  300 0 0 0>
+            , <&key_physical_attrs 100 100  800  300 0 0 0>
+            , <&key_physical_attrs 100 100  900  300 0 0 0>
+            , <&key_physical_attrs 100 100 1000  300 0 0 0>
+            , <&key_physical_attrs 100 100 1100  300 0 0 0>
+            ;
+    };
+};
+```
+
