@@ -1486,13 +1486,7 @@ CONFIG_ZMK_STUDIO_LOCKING=n
 
 ```c
 / {
-    chosen {
-        ...
-        zmk,physical-layout = &physical_layout0;
-    };
-
-    ... 中略。
-
+    ...
     /* Physical Layout */
     physical_layout0: physical_layout_0 {
         compatible = "zmk,physical-layout";
