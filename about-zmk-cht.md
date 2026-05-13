@@ -1146,7 +1146,7 @@ CONFIG_ZMK_USB=y
 
 > 註：`CI/CD`：持續整合 / 持續部署。
 
-前面我們花了非非非非常大量的時間在架構 `zmk` 的編譯環境，在這個章節裡面，我會讓大家理解跟控制這兩部分——`GitHub Actions` 跟官方 `ZMK Studio` 的部分進行假設方法及架構解說。
+前面我們花了非非非非常大量的時間在架構 `zmk` 的編譯環境，在這個章節裡面，我會讓大家理解跟控制這兩部分——`GitHub Actions` 跟官方 `ZMK Studio` 的部分進行架設方法及架構解說。
 
 1. 首先回到本地 `GitHub` 資料夾中，我們需要確認 `XXX-zmk-config` 目錄下，找到 `.github/workflows/build.yaml` 檔案。
 
@@ -1322,7 +1322,7 @@ sudo apt install protobuf-compiler
 pip install protobuf grpcio-tools
 ```
 
-2. 首先我們需要進入到 `XXX-zmk-config` 目錄下，打開 `boards/shields/<custom_keyboard>/<custom_keyboard>.conf` 檔案，加入這行啓動代碼：
+2. 接下來我們需要進入到 `XXX-zmk-config` 目錄下，打開 `boards/shields/<custom_keyboard>/<custom_keyboard>.conf` 檔案，加入這行啓動代碼：
 
 ``` conf
 # 開啟 ZMK Studio
@@ -1559,4 +1559,119 @@ CONFIG_ZMK_STUDIO_LOCKING=n
 
 <br>
 
-5. 保險一點，我個人實作到這裡建議先編譯一次，看有沒有報錯再接下去製作其他的 `Layout`。
+### 啓動 ZMK Studio
+
+保險一點，我個人實作到這裡建議先編譯一次，看有沒有報錯再接下去製作其他的 `Layout`。
+
+因爲我的測試環境是 `Linux Mint`，因此在 `USB` 連接方面有很嚴格的限制... 大部分的 `Linux` 都是這樣，其他系統是需要測試的。
+
+<br>
+
+在編譯之前，需要進行幾個設定項目，不然你直接編譯可以過也能燒錄，但 `ZMK Studio` 絕對不會讓你開官網連接修改按鍵。
+
+1. 回到終端機，我們需要先將 `Linux` 系統的 `USB` 網頁讀取權限打開：
+
+```bash
+sudo chmod 666 /dev/ttyACM0
+sudo usermod -aG dialout $USER
+```
+
+2. 我們回到本地端 `XXX-zmk-config` 資料夾，先將目錄下的 build.yaml 打開，在 include 下方的 <custom_keyboard> 設定檔下方加入 `ZMK Studio` 的啓動碼。
+
+``` yaml
+# This file generates the GitHub Actions matrix.
+# For simple board + shield combinations, add them to the top level board and
+# shield arrays, for more control, add individual board + shield combinations
+# to the `include` property. You can also use the `cmake-args` property to
+# pass flags to the build command, `snippet` to add a Zephyr snippet, and
+# `artifact-name` to assign a name to distinguish build outputs from each other:
+#
+# board: [ "nice_nano" ]
+# shield: [ "corne_left", "corne_right" ]
+# include:
+#   - board: bdn9_rev2
+#   - board: nice_nano
+#     shield: reviung41
+#   - board: nice_nano
+#     shield: corne_left
+#     snippet: studio-rpc-usb-uart
+#     cmake-args: -DCONFIG_ZMK_STUDIO=y
+#     artifact-name: corne_left_with_studio
+#
+---
+include:
+  - board: nice_nano//zmk
+    shield: outsider
+    snippet: studio-rpc-usb-uart # 加入這一行
+```
+
+3. 接下來就可以燒錄韌體了，但我們需要調整一下編譯指令：
+
+``` bash
+west build -p -b nice_nano -S studio-rpc-usb-uart -- -DSHIELD=<custom_keyboard> -DZMK_CONFIG="[你的 XXX-zmk-config 資料夾路徑]"
+```
+
+4. 成功編譯之後，將韌體燒錄到鍵盤裡面，然後順便測試一下鍵盤接著 `USB` 線有沒有正常運作，然後再打開 `ZMK` 官網——https://zmk.dev/
+5. 官網的上方有 `ZMK Studio` 的按鈕，點進去。
+
+![](pic/info/kme5.png)
+
+<br>
+
+6. 點選中央的 USB 按鈕，然後就會看到網頁上方跳出一個連接選項，你的鍵盤出現在上方，那麼就成功了。
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="pic/info/kme6.png" width="100%" alt="kme6">
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="pic/info/kme7.png" width="100%" alt="kme7">
+    </td>
+  </tr>
+</table>
+
+<br>
+
+### 注意事項
+
+燒錄且讀取 `ZMK Studio` 之後，這裡要跟大家說一下這個功能的優缺點。
+
+首先是「優點」：
+- 可以不受連接限制修改按鍵功能。
+- 如果還有其他的，我會再補上（笑）。
+
+缺點：
+- 無官方教學文本——這個非常嚴重。
+  - 只有 `.conf` 大啓動項設定。
+  - `.conf` 設定好之後，還有一堆的雜項需要設定。
+- `Physical Layout`：
+  - 不知道怎麼使用。
+  - 不知道如何定義。
+  - 不知道代碼怎麼寫。
+  - 不知道代碼座標系統依據的標準是什麼。
+
+以上全部都是我「逆向分析」去推導出來的，開頭我有特別強調我是「開荒」。也就是說，我個人在寫這篇文本遇到的 `Error` 次數，可能比你幾個月下來的還要多 `10` 倍，甚至更多。
+
+<br>
+
+回到主題，`ZMK Studio` 的限制有哪些？
+1. 無法像 VIAL 那樣設定「選單式」修正「部分」Layout。
+    - 自由度受限。
+    - 代碼工程量非常龐大。
+
+2. 多配列設置太多，會有單片機記憶體分配問題。
+    - 深水區。
+
+<br>
+
+我能夠爲大家做到這種程度的開荒，也是相當意外的一件事，畢竟我早就知道 `ZMK` 本身就是一個對新手極度「不友善」的一套韌體，但沒想到不友善的程度超乎我的想象。
+
+如果這篇附贈的教學文章能夠讓大家在藍牙設備搜尋裡面「順利地」在列表上跑出來，那麼這個意義就不一樣了。
+
+我是 `DreaM117er`，來自臺灣的業餘鍵盤開發者，如果還有更多的機會，我會繼續開荒下去。
+
+> 指向裝置我會再找時間用開發板獨立出來做開荒除錯，稍等我一陣子。
+
