@@ -1009,7 +1009,6 @@ Here is our current `XXX-zmk-config` folder architecture:
 1. First we enter the `west` folder:
 
 ``` bash
-# 指標設備
 zmk cd
 cd west
 ```
