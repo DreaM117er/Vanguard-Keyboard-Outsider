@@ -16,7 +16,7 @@ The codename for Vanguard Series 1st is `Mono`, and its Chinese codename is "Twi
 
 Because it is based on the "Explorer Series", although Vanguard is somewhat restricted to developing in the "modular" area, I will not abandon the degree of freedom of the "Explorer". Conversely, this freedom actually caused some confusion for me during development, which was a minor accident.
 
-`Plank` has always been the progenitor of ortholinear layouts that I really like, and No.`3` is also a keyboard developed based on `Plank`. My idea is very simple:
+`Plank` has always been the progenitor of ortholinear layouts that I really like, and `Blank` is also a keyboard developed based on `Plank`. My idea is very simple:
 
 ——Starting from the most primitive, there will definitely be better creativity.
 
@@ -44,7 +44,7 @@ The main reason I designed the `Outsider` into this unique appearance is the ret
 
 ——It can be used by flipping it "arbitrarily".
 
-And it is an extended design based on Explorer No.3, which means its MCU area is inherited. The bill of materials will specify which components directly use the design files of "Explorer No.3".
+And it is an extended design based on Explorer Blank, which means its MCU area is inherited. The bill of materials will specify which components directly use the design files of "Explorer Keybaord Blank".
 
 <br>
 
@@ -158,10 +158,10 @@ The materials used part is relatively simple. `Outsider` does not have excessive
 ||Bottom Plate|1|1|Thickness `1.6mm`|
 ||`4x8` Positioning Plate|1|1|**See notes below**|
 ||`4x2` Positioning Plate|1|2|**See notes below**|
-|`TM040040`|Module `A`|1|1|**No.3 Component**|
-|`TM040040`|Module `B`|1|1|**No.3 Component**|
-|`TM040040`|Module `C`|1|1|**No.3 Component**|
-|`TPS43`|Module `D`|1|1|**No.3 Component**|
+|`TM040040`|Module `A`|1|1|**Blank Component**|
+|`TM040040`|Module `B`|1|1|**Blank Component**|
+|`TM040040`|Module `C`|1|1|**Blank Component**|
+|`TPS43`|Module `D`|1|1|**Blank Component**|
 |⚠️ **MCU**|**Footprint**||||
 |`ATMega32U4`|`ProMicro`|1|1|**Basic Wired Version**|
 |`RP2040`|`ProMicro`|1|1|**Wired Trackpad**|
