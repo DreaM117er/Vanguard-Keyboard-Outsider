@@ -6,13 +6,13 @@
 
 ## Preface
 
-The "Vanguard Series" is a branch point I personally developed based on the "Explorer No.3" architecture. This is because, in the design of Explorer No.3, I "modularized" the keyboard's MCU area, allowing its trackpad and `ProMicro` MCU module to be completely reused in subsequent works.
+The "Vanguard Series" is a branch point I personally developed based on the "Explorer Keyboard Blank" architecture. This is because, in the design of Blank, I "modularized" the keyboard's MCU area, allowing its trackpad and `ProMicro` MCU module to be completely reused in subsequent works.
 
 - Why is this keyboard number two?
 
-The codename for Vanguard No.1 is `Mono`, and its Chinese codename is "Twin Sisters". Considering that people were eagerly asking for the development of zmk firmware, I started another keyboard first to try and research zmk, taking the opportunity to create a wireless version of the firmware. Once successful, I will go back to complete the development of "No.1".
+The codename for Vanguard Series 1st is `Mono`, and its Chinese codename is "Twin Sisters". Considering that people were eagerly asking for the development of zmk firmware, I started another keyboard first to try and research zmk, taking the opportunity to create a wireless version of the firmware. Once successful, I will go back to complete the development of "1st".
 
-——Of course, there is also the development of the "Explorer No.3" `v2` and its wireless firmware version.
+——Of course, there is also the development of the "Blank `v2`" and its wireless firmware version.
 
 Because it is based on the "Explorer Series", although Vanguard is somewhat restricted to developing in the "modular" area, I will not abandon the degree of freedom of the "Explorer". Conversely, this freedom actually caused some confusion for me during development, which was a minor accident.
 
